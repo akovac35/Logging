@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Helpful resources for .NET Core and ASP.NET Core logging using various logger frameworks.</Description>
+    <VersionPrefix>1.0.3</VersionPrefix>
+    <Authors>Aleksander Kovač</Authors>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <PackageTags>logging;serilog;nlog</PackageTags>
+    <RepositoryUrl>https://github.com/akovac35/Logging</RepositoryUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageIcon>.NET_Core_Logo.png</PackageIcon>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  
+  <ItemGroup>
+    <ProjectReference Include="..\com.github.akovac35.Logging.AspNetCore\com.github.akovac35.Logging.AspNetCore.csproj" />
+    <ProjectReference Include="..\com.github.akovac35.Logging.Serilog\com.github.akovac35.Logging.Serilog.csproj" />
+    
+    <None Include="../Resources/.NET_Core_Logo.png" Pack="true" PackagePath=""/>
+  </ItemGroup>
+
+</Project>
