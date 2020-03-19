@@ -1,7 +1,7 @@
 # Logging
 Helpful resources for .NET Core and ASP.NET Core logging using various logger frameworks.
 
-[![this](Resources/.NET_Core_Logo_small.png)]
+![this](Resources/.NET_Core_Logo_small.png)
 
 * [com.github.akovac35.Logging](https://www.nuget.org/packages/com.github.akovac35.Logging/)
 
