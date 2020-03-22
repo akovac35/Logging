@@ -45,13 +45,14 @@ The following functionality is provided for Microsoft.Extensions.Logging:
     }
 	```
 
-* static ```LoggerFactoryProvider``` for straightforward access to an instance of ```ILoggerFactory```,
+* ```LoggerFactoryProvider``` for straightforward access to an instance of an ```ILoggerFactory```,
 
 * ```LoggerHelper<T>``` using which it is possible to log application startup events:
 
     ```cs
     using com.github.akovac35.Logging;
     using Microsoft.Extensions.Logging;
+    using System;
     using static com.github.akovac35.Logging.LoggerHelper<ConsoleApp.Program>;
 
     namespace ConsoleApp
@@ -92,8 +93,8 @@ The following functionality is provided for Microsoft.Extensions.Logging:
 
 * ```CorrelationProvider```, ```CorrelationIdMiddleware``` and other code for correlating log entries and requests, or log scopes,
 * logger framework specifics:
-  * Serilog enricher and NLog layout renderers utilizing ```CorrelationProvider```,
-  * Serilog configuration updater. 
+  * Serilog enricher and NLog layout renderer utilizing ```CorrelationProvider```,
+  * Serilog configuration monitor for settings file updates. 
 
 Advanced samples utilizing the listed functionality are provided here: [Logging.Samples](https://github.com/akovac35/Logging.Samples)
 
