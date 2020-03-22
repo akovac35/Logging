@@ -45,7 +45,7 @@ The following functionality is provided for Microsoft.Extensions.Logging:
     }
 	```
 
-* ```LoggerFactoryProvider``` for straightforward access to an instance of an ```ILoggerFactory```,
+* ```LoggerFactoryProvider``` for straightforward access to an instance of ```ILoggerFactory```,
 
 * ```LoggerHelper<T>``` using which it is possible to log application startup events:
 
@@ -78,7 +78,7 @@ The following functionality is provided for Microsoft.Extensions.Logging:
                 }
                 finally
                 {
-                    // Dispose logger framework
+                    // Dispose logger framework here
                 }
             }
         }
@@ -95,6 +95,8 @@ The following functionality is provided for Microsoft.Extensions.Logging:
 * logger framework specifics:
   * Serilog enricher and NLog layout renderer utilizing ```CorrelationProvider```,
   * Serilog configuration monitor for settings file updates. 
+
+## Samples
 
 Advanced samples utilizing the listed functionality are provided here: [Logging.Samples](https://github.com/akovac35/Logging.Samples)
 
