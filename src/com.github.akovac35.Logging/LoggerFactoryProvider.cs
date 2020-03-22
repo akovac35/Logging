@@ -1,6 +1,7 @@
 ﻿// Author: Aleksander Kovač
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 
 namespace com.github.akovac35.Logging
@@ -29,7 +30,7 @@ namespace com.github.akovac35.Logging
 
         public static void SetDefaultLoggerFactory()
         {
-            _loggerFactory = new LoggerFactory();
+            _loggerFactory = new NullLoggerFactory();
         }
     }
 }

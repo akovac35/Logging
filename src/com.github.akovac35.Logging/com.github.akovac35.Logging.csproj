@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <Description>Helpful resources for .NET Core and ASP.NET Core logging using various logger frameworks.</Description>
-    <VersionPrefix>1.0.3</VersionPrefix>
-    <Authors>Aleksander Kovac</Authors>
+    <VersionPrefix>1.0.4</VersionPrefix>
+    <Authors>Aleksander Kovač</Authors>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <PackageTags>logging;serilog;nlog</PackageTags>
     <RepositoryUrl>https://github.com/akovac35/Logging</RepositoryUrl>
@@ -15,10 +15,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\com.github.akovac35.Logging.AspNetCore\com.github.akovac35.Logging.AspNetCore.csproj" />
-    <ProjectReference Include="..\com.github.akovac35.Logging.NLog\com.github.akovac35.Logging.NLog.csproj" />
-    
-    <None Include="../Resources/.NET_Core_Logo.png" Pack="true" PackagePath=""/>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
+	
+    <None Include="../../Resources/.NET_Core_Logo.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 
 </Project>

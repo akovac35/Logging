@@ -5,7 +5,7 @@ using NLog.Config;
 using NLog.LayoutRenderers;
 using System.Text;
 
-namespace com.github.akovac35.Logging.NLog
+namespace com.github.akovac35.Logging.NLog.LayoutRenderers
 {
     [LayoutRenderer("CorrelationId")]
     [ThreadSafe]

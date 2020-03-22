@@ -1,0 +1,11 @@
+{
+  "Serilog": {
+
+    "MinimumLevel: {
+      "Default": "Verbose",
+      "Override": {
+        "Microsoft": "Information"
+      }
+    }
+  }
+}

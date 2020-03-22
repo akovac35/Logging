@@ -3,22 +3,30 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.Serilog", "com.github.akovac35.Logging.Serilog\com.github.akovac35.Logging.Serilog.csproj", "{B0132CFC-05C7-4ECB-8BB7-7A23AA175DB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.Serilog", "src\com.github.akovac35.Logging.Serilog\com.github.akovac35.Logging.Serilog.csproj", "{B0132CFC-05C7-4ECB-8BB7-7A23AA175DB2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.Serilog.AspNetCore", "com.github.akovac35.Logging.Serilog.AspNetCore\com.github.akovac35.Logging.Serilog.AspNetCore.csproj", "{10F4404D-B3AE-429B-8395-5FF3C7BC6B70}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.Serilog.AspNetCore", "src\com.github.akovac35.Logging.Serilog.AspNetCore\com.github.akovac35.Logging.Serilog.AspNetCore.csproj", "{10F4404D-B3AE-429B-8395-5FF3C7BC6B70}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging", "com.github.akovac35.Logging\com.github.akovac35.Logging.csproj", "{7D75E573-C515-4B17-AAA4-248D87AD0646}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging", "src\com.github.akovac35.Logging\com.github.akovac35.Logging.csproj", "{7D75E573-C515-4B17-AAA4-248D87AD0646}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.AspNetCore", "com.github.akovac35.Logging.AspNetCore\com.github.akovac35.Logging.AspNetCore.csproj", "{9899B55E-B6AD-4D56-BF3C-813CE425CECE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.AspNetCore", "src\com.github.akovac35.Logging.AspNetCore\com.github.akovac35.Logging.AspNetCore.csproj", "{9899B55E-B6AD-4D56-BF3C-813CE425CECE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.NLog", "com.github.akovac35.Logging.NLog\com.github.akovac35.Logging.NLog.csproj", "{48325379-E2B3-4E7B-BA25-9131568E2940}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.NLog", "src\com.github.akovac35.Logging.NLog\com.github.akovac35.Logging.NLog.csproj", "{48325379-E2B3-4E7B-BA25-9131568E2940}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.NLog.AspNetCore", "com.github.akovac35.Logging.NLog.AspNetCore\com.github.akovac35.Logging.NLog.AspNetCore.csproj", "{0882BCF6-8A31-4E59-B07D-490ACD86D772}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.NLog.AspNetCore", "src\com.github.akovac35.Logging.NLog.AspNetCore\com.github.akovac35.Logging.NLog.AspNetCore.csproj", "{0882BCF6-8A31-4E59-B07D-490ACD86D772}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{933983AD-10A6-4855-A14A-C839FE3522A5}"
 	ProjectSection(SolutionItems) = preProject
 		Logging.header = Logging.header
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.Tests", "test\com.github.akovac35.Logging.Tests\com.github.akovac35.Logging.Tests.csproj", "{C383C22C-F615-4D2B-B184-5330C50BF2EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "com.github.akovac35.Logging.Tests.Shared", "test\com.github.akovac35.Logging.Tests.Shared\com.github.akovac35.Logging.Tests.Shared.csproj", "{8F8983D9-D289-4C88-98D6-CE091B6879BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "com.github.akovac35.Logging.AspNetCore.Tests", "test\com.github.akovac35.Logging.AspNetCore.Tests\com.github.akovac35.Logging.AspNetCore.Tests.csproj", "{B33E651D-DCAE-4989-97F7-48DD7537C36F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "com.github.akovac35.Logging.Serilog.Tests", "test\com.github.akovac35.Logging.Serilog.Tests\com.github.akovac35.Logging.Serilog.Tests.csproj", "{2E0F8604-9E19-4840-AB53-4CD94495E352}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +58,22 @@ Global
 		{0882BCF6-8A31-4E59-B07D-490ACD86D772}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0882BCF6-8A31-4E59-B07D-490ACD86D772}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0882BCF6-8A31-4E59-B07D-490ACD86D772}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C383C22C-F615-4D2B-B184-5330C50BF2EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C383C22C-F615-4D2B-B184-5330C50BF2EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C383C22C-F615-4D2B-B184-5330C50BF2EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C383C22C-F615-4D2B-B184-5330C50BF2EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F8983D9-D289-4C88-98D6-CE091B6879BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F8983D9-D289-4C88-98D6-CE091B6879BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F8983D9-D289-4C88-98D6-CE091B6879BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F8983D9-D289-4C88-98D6-CE091B6879BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B33E651D-DCAE-4989-97F7-48DD7537C36F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B33E651D-DCAE-4989-97F7-48DD7537C36F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B33E651D-DCAE-4989-97F7-48DD7537C36F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B33E651D-DCAE-4989-97F7-48DD7537C36F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E0F8604-9E19-4840-AB53-4CD94495E352}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E0F8604-9E19-4840-AB53-4CD94495E352}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E0F8604-9E19-4840-AB53-4CD94495E352}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E0F8604-9E19-4840-AB53-4CD94495E352}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

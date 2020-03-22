@@ -7,7 +7,7 @@ using NLog.Config;
 using NLog.LayoutRenderers;
 using System.Text;
 
-namespace com.github.akovac35.Logging.NLog.AspNetCore
+namespace com.github.akovac35.Logging.NLog.AspNetCore.LayoutRenderers
 {
     [LayoutRenderer("CorrelationId")]
     [ThreadSafe]
