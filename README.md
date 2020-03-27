@@ -24,81 +24,274 @@ This library contains helpful resources for .NET Core and ASP.NET Core logging u
 
 	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.Serilog.AspNetCore.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging.Serilog.AspNetCore/) [![NuGet Downloads](https://img.shields.io/nuget/dt/com.github.akovac35.Logging.Serilog.AspNetCore.svg)](https://www.nuget.org/packages/com.github.akovac35.Logging.Serilog.AspNetCore/) 
 
+## Samples
+
+Advanced samples utilizing library functionality are provided here: [Logging.Samples](https://github.com/akovac35/Logging.Samples)
+
 ## Contents
+
+Logging is an important aspect of any application framework. Compared to Java logging, configuring .NET Core and ASP.NET Core applications for logging seems trivial at first, until we encounter framework specifics related to async code execution that make it impossible to correlate log entries based on the thread id - async methods may switch threads during different stages of the execution, so it is not possible to distinguish which log entry belongs to a specific activity without some sort of log entry correlation being provided with each log entry. This logging library provides means with which it is possible to correlate application activity and log entries, and more.
 
 The following functionality is provided for Microsoft.Extensions.Logging:
 
-* ```ILogger``` extensions for method entry / exit logging:
+### Invocation context logging
 
-	```cs
-    public IEnumerable<Blog> Find(string term)
+Generally it is useful to have method name and source code line number included with the log entry for easier troubleshooting or simpler coding:
+
+```
+[2020-03-26 23:39:11.943 +01:00] INF 25 410eb646-d979-4814-9f17-8b622ec44ffb <WebApp.Pages.Counter:IncrementCount:29> currentCount: 1
+```
+
+This library includes ```Here(Action<ILogger> logAction)``` methods which do just that: 
+
+```cs
+using com.github.akovac35.Logging;
+_logger.Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
+
+//or
+
+using static com.github.akovac35.Logging.LoggerHelper<WebApp.Pages.Counter>
+Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
+```
+
+It is important to note that instead of using reflection, invocation context is determined with the help of compiler service attributes, which minimizes performance impact.
+
+### Logger helper
+
+This library provides a static generic helper class ```LoggerHelper<T>``` using which it is possible to log application startup events or use it for straightforward logging inside types without having to inject a logger instance:
+
+```cs
+using com.github.akovac35.Logging;
+using Microsoft.Extensions.Logging;
+using System;
+
+using static com.github.akovac35.Logging.LoggerHelper<ConsoleApp.Program>;
+
+namespace ConsoleApp
+{
+    public class Program
     {
-        _logger.Entering(term);
-
-        var tmp = Context.Blogs
-            .Where(b => b.Url.Contains(term))
-            .OrderBy(b => b.Url)
-            .ToList();
-
-        _logger.Exiting(tmp);
-        return tmp;
-    }
-	```
-
-* ```LoggerFactoryProvider``` for straightforward access to an instance of ```ILoggerFactory```,
-
-* ```LoggerHelper<T>``` using which it is possible to log application startup events:
-
-    ```cs
-    using com.github.akovac35.Logging;
-    using Microsoft.Extensions.Logging;
-    using System;
-    using static com.github.akovac35.Logging.LoggerHelper<ConsoleApp.Program>;
-
-    namespace ConsoleApp
-    {
-        public class Program
+        public static async Task Main(string[] args)
         {
-            public static async Task Main(string[] args)
+            // Configure logger framework at application startup first and then
+            // define a logger factory for this library to use:
+            // ... logger framework initialization sufficient for logging application startup events ...
+            LoggerFactoryProvider.LoggerFactory = new XYZLoggerFactory(); // SerilogLoggerFactory, NLogLoggerFactory, ...
+
+            Logger.Entering(args);
+
+            try
             {
-                // Configure logger framework here
+                // Perform work here
 
-                Logger.Entering(args);
-
-                try
-                {
-                    // Perform work here
-
-                    Logger.Exiting(args);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, ex.Message);
-                    throw ex;
-                }
-                finally
-                {
-                    // Dispose logger framework here
-                }
+                Logger.Exiting(args);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                throw ex;
+            }
+            finally
+            {
+                // Dispose logger framework
             }
         }
     }
-    ```
+}
+```
 
-* invocation context functions for ```ILogger``` and ```LoggerHelper<T>```. The following call will contain **compile time** log scope state using which it is possible to log method name and source code line number: 
-  
-    ```cs
-    _logger.Here(l => l.LogDebug("{@disposedValue}", disposedValue));
-    ```
+### Method entry / exit logging
 
-* ```CorrelationProvider```, ```CorrelationIdMiddleware``` and other code for correlating log entries and requests, or log scopes,
-* logger framework specifics:
-  * Serilog enricher and NLog layout renderer utilizing ```CorrelationProvider```,
-  * Serilog configuration monitor for settings file updates. 
+Logging method entry and exit is generally a good practice because it makes production problem resolution easier and writing code simpler. It is much easier to troubleshoot problems when method input parameters and return values are available. It is also much simpler to write logging code knowing that log will first contain an entry statement with method name and source code line number from which it is possible to infer general context and meaning:
 
-## Samples
+```
+[2020-03-26 23:39:11.943 +01:00] VRB 25 410eb646-d979-4814-9f17-8b622ec44ffb <WebApp.Pages.Counter:IncrementCount:26> Entering
+[2020-03-26 23:39:11.943 +01:00] INF 25 410eb646-d979-4814-9f17-8b622ec44ffb <WebApp.Pages.Counter:IncrementCount:29> currentCount: 1
+[2020-03-26 23:39:12.454 +01:00] VRB 15 410eb646-d979-4814-9f17-8b622ec44ffb <WebApp.Pages.Counter:IncrementCount:35> Exiting
 
-Advanced samples utilizing the listed functionality are provided here: [Logging.Samples](https://github.com/akovac35/Logging.Samples)
+```
+
+```cs
+using static com.github.akovac35.Logging.LoggerHelper<WebApp.Pages.Counter>
+
+private async Task IncrementCount()
+{
+    Here(l => l.Entering());
+
+    currentCount++;
+    // No need to write which counter we are increasing, which method etc.
+    Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
+
+    Here(l => l.Exiting());
+}
+```
+
+Method input parameters and return values can be logged as well:
+
+```
+[2020-03-26 23:36:14.420 +01:00] VRB 10 a90aead6-da9c-4adf-af70-d2e7aabd729e <Shared.Services.WeatherForecastService:GetForecastAsync:37> Entering: 03/26/2020 23:36:14
+[2020-03-26 23:36:14.422 +01:00] VRB 10 a90aead6-da9c-4adf-af70-d2e7aabd729e <Shared.Services.WeatherForecastService:GetForecastAsync:49> Exiting: Task`1 {Result=[WeatherForecast {Date=03/27/2020 23:36:14, TemperatureC=-12, TemperatureF=11, Summary="Scorching"}, WeatherForecast {Date=03/28/2020 23:36:14, TemperatureC=42, TemperatureF=107, Summary="Chilly"}, WeatherForecast {Date=03/29/2020 23:36:14, TemperatureC=42, TemperatureF=107, Summary="Cool"}, WeatherForecast {Date=03/30/2020 23:36:14, TemperatureC=3, TemperatureF=37, Summary="Sweltering"}, WeatherForecast {Date=03/31/2020 23:36:14, TemperatureC=43, TemperatureF=109, Summary="Freezing"}], Id=1, Exception=null, Status=RanToCompletion, IsCanceled=False, IsCompleted=True, IsCompletedSuccessfully=True, CreationOptions=None, AsyncState=null, IsFaulted=False}
+
+```
+
+```cs
+using com.github.akovac35.Logging;
+
+public Task<WeatherForecast[]> GetForecastAsync(DateTime startDate)
+{
+    _logger.Here(l => l.Entering(startDate));
+
+    // ...
+
+    _logger.Here(l => l.Exiting(tmp));
+    return tmp;
+}
+```
+
+Because method entry and exit logging can be quite verbose, the default log level used is ```Trace```. Method overloads are available so this can be changed, which is useful for use in APIs where request and response objects are generally always logged.
+
+**Do note that some objects, such as connections and requests, may require a more sophisticated approach than the one indicated here.** This is usualy because logging such objects may trigger an exception for some invoked properties, or it may cause performance problems. Either do not log such objects or use wrappers and only expose safe properties.
+
+### Log correlation
+
+Correlating application activity and log entries in .NET is not as straightforward as in e.g. Java. There, it would be sufficient to log a method entry, which will occur on a particular thread, and afterward track that thread until a relevant method exit log entry is reached. The main issue preventing the described approach in .NET is async functionality which makes it less likely that an activity will execute only on the thread which started it.
+
+Console applications can achieve correlation easily with logger scopes:
+
+```cs
+using Microsoft.Extensions.Logging;
+
+using (Logger.BeginScope(new[] { new KeyValuePair<string, object>(Constants.CorrelationId, 12345678) }))
+{
+    List<Task<int>> tasks = new List<Task<int>>();
+    for (int i = 0; i < 10; i++)
+    {
+        tasks.Add(BusinessLogicMock<object>.GetTaskInstance());
+    }
+
+    // Business logic call sample
+    await Task.WhenAll(tasks);
+}
+```
+
+This library provides the ```ICorrelationProvider``` service to achieve correlation in ASP.NET Core applications - usually it should be scoped:
+
+```cs
+using com.github.akovac35.Logging.AspNetCore;
+using com.github.akovac35.Logging.Correlation;
+
+services.AddHttpContextAccessor();
+services.AddScoped<ICorrelationProvider, CorrelationProvider>();
+services.AddScoped<WeatherForecastService>(fact =>
+{
+    ICorrelationProvider correlationProvider = (new HttpContextAccessor()).GetCorrelationProvider();
+    return new WeatherForecastService(correlationProvider);
+});
+```
+
+A relevant scope instance must exist for the ```ICorrelationProvider``` to be available via the ```HttpContextAccessor```. If it is not available, use direct logger scopes instead. Do note that Controller scope is per request while Blazor Server circuit scope is per user; this is explained in [ASP.NET Core Blazor dependency injection](https://docs.microsoft.com/en-us/aspnet/core/blazor/dependency-injection?view=aspnetcore-3.1#service-lifetime) document.
+
+For Razor pages, correlation can be retrieved with an instance of the ```HttpContextAccessor``` as follows:
+
+```razor
+@page "/counter"
+
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Http
+@using global::com.github.akovac35.Logging.AspNetCore
+@using global::com.github.akovac35.Logging
+@using global::Shared.Mocks
+
+@using static global::com.github.akovac35.Logging.LoggerHelper<WebApp.Pages.Counter>
+
+@inject IHttpContextAccessor hc
+
+<h1>Counter</h1>
+
+<p>Correlation id:  @hc.GetCorrelationId()</p>
+
+<p>Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+
+    private async Task IncrementCount()
+    {
+        Here(l => l.Entering());
+
+        currentCount++;
+        Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
+
+        // Business logic call sample
+        var blMock = new BusinessLogicMock<object>();
+        await blMock.FirstLevelAsync(500);
+
+        Here(l => l.Exiting());
+    }
+}
+```
+
+Similarly for Controllers:
+
+```cs
+using com.github.akovac35.Logging.AspNetCore;
+using com.github.akovac35.Logging.Correlation;
+
+protected IHttpContextAccessor _contextAccessor = new HttpContextAccessor();
+
+[HttpGet]
+public async Task<WeatherForecast[]> Get()
+{
+    _logger.Here(l => l.Entering());
+
+    var forecasts = await _forecastService.GetForecastAsync(DateTime.Now);
+    _logger.Here(l => l.LogInformation("CorrelationId for a request instance can be obtained with HttpContextAccessor: {@correlationId}", _contextAccessor.GetCorrelationId()));
+
+    _logger.Here(l => l.Exiting(forecasts));
+    return forecasts;
+}
+```
+
+If used, the ```CorrelationIdMiddleware``` will find and extract the ```x-request-id``` header value and use it for log correlation:
+
+```cs
+using com.github.akovac35.Logging.AspNetCore.Correlation;
+
+app.UseMiddleware<CorrelationIdMiddleware>();
+```
+
+```
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -H "x-request-id: 12345678" -k https://localhost:5001/weatherforecast
+
+[2020-03-23 00:26:57.287 +01:00] INF 4 54cf926d-457d-443e-a8e7-898cae0fb0ae <Microsoft.AspNetCore.Hosting.Diagnostics::> Request starting HTTP/2 GET https://localhost:5001/weatherforecast application/json 
+[2020-03-23 00:26:57.291 +01:00] INF 4 12345678 <Microsoft.AspNetCore.Routing.EndpointMiddleware::> Executing endpoint '"WebApi.Controllers.WeatherForecastController.Get (WebApi)"'
+[2020-03-23 00:26:57.294 +01:00] INF 4 12345678 <Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker::> Route matched with "{action = \"Get\", controller = \"WeatherForecast\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Shared.Services.WeatherForecast[]] Get()" on controller "WebApi.Controllers.WeatherForecastController" ("WebApi").
+[2020-03-23 00:26:57.297 +01:00] VRB 4 12345678 <Shared.Services.WeatherForecastService:.ctor:18> Entering: CorrelationProvider { Value: Correlation { Id: "12345678" } }
+[2020-03-23 00:26:57.300 +01:00] VRB 4 12345678 <Shared.Services.WeatherForecastService:.ctor:23> Exiting
+[2020-03-23 00:26:57.302 +01:00] VRB 4 12345678 <WebApi.Controllers.WeatherForecastController:.ctor:29> Entering: WeatherForecastService {  }
+[2020-03-23 00:26:57.307 +01:00] VRB 4 12345678 <WebApi.Controllers.WeatherForecastController:.ctor:34> Exiting
+[2020-03-23 00:26:57.309 +01:00] VRB 4 12345678 <WebApi.Controllers.WeatherForecastController:Get:46> Entering
+[2020-03-23 00:26:57.311 +01:00] VRB 4 12345678 <Shared.Services.WeatherForecastService:GetForecastAsync:37> Entering: 03/23/2020 00:26:57
+[2020-03-23 00:26:57.313 +01:00] INF 4 12345678 <Shared.Services.WeatherForecastService:GetForecastAsync:39> CorrelationId is useful for correlating log contents with service or web page requests: "12345678"
+[2020-03-23 00:26:57.315 +01:00] VRB 4 12345678 <Shared.Services.WeatherForecastService:GetForecastAsync:49> Exiting: Task`1 { Result: [WeatherForecast { Date: 03/24/2020 00:26:57, TemperatureC: -16, TemperatureF: 4, Summary: "Warm" }, WeatherForecast { Date: 03/25/2020 00:26:57, TemperatureC: -13, TemperatureF: 9, Summary: "Sweltering" }, WeatherForecast { Date: 03/26/2020 00:26:57, TemperatureC: 32, TemperatureF: 89, Summary: "Chilly" }, WeatherForecast { Date: 03/27/2020 00:26:57, TemperatureC: 42, TemperatureF: 107, Summary: "Cool" }, WeatherForecast { Date: 03/28/2020 00:26:57, TemperatureC: 27, TemperatureF: 80, Summary: "Hot" }], Id: 102, Exception: null, Status: RanToCompletion, IsCanceled: False, IsCompleted: True, IsCompletedSuccessfully: True, CreationOptions: None, AsyncState: null, IsFaulted: False }
+[2020-03-23 00:26:57.334 +01:00] INF 4 12345678 <WebApi.Controllers.WeatherForecastController:Get:49> CorrelationId for a request instance can be obtained with HttpContextAccessor: "12345678"
+[2020-03-23 00:26:57.338 +01:00] VRB 4 12345678 <WebApi.Controllers.WeatherForecastController:Get:51> Exiting: WeatherForecast { Date: 03/24/2020 00:26:57, TemperatureC: -16, TemperatureF: 4, Summary: "Warm" }
+[2020-03-23 00:26:57.343 +01:00] INF 4 12345678 <Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor::> Executing ObjectResult, writing value of type '"Shared.Services.WeatherForecast[]"'.
+[2020-03-23 00:26:57.346 +01:00] INF 4 12345678 <Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker::> Executed action "WebApi.Controllers.WeatherForecastController.Get (WebApi)" in 48.6032ms
+[2020-03-23 00:26:57.348 +01:00] INF 4 12345678 <Microsoft.AspNetCore.Routing.EndpointMiddleware::> Executed endpoint '"WebApi.Controllers.WeatherForecastController.Get (WebApi)"'
+[2020-03-23 00:26:57.352 +01:00] INF 4 12345678 <Serilog.AspNetCore.RequestLoggingMiddleware::> HTTP "GET" "/weatherforecast" responded 200 in 61.7780 ms
+[2020-03-23 00:26:57.355 +01:00] INF 4  <Microsoft.AspNetCore.Hosting.Diagnostics::> Request finished in 68.0659ms 200 application/json; charset=utf-8
+```
+
+### Logger framework specifics
+
+* Logger framework configuration helpers for Serilog and NLog,
+* Serilog enricher and NLog layout renderer utilizing ```CorrelationProvider```,
+* Serilog configuration monitor for settings file updates. 
+
+
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
