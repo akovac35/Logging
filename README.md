@@ -100,6 +100,8 @@ namespace ConsoleApp
 }
 ```
 
+**Do note that the ```LoggerFactoryProvider.LoggerFactory``` must be defined immediately when application is started but also updated when the logger framework is fully initialized**, to account for any changes during the initialization process (specifically for ASP.NET Core). ```LoggerHelper<T>``` should never be used inside static constructors or to initialize static logger instances.
+
 ### Method entry / exit logging
 
 Logging method entry and exit is generally a good practice because it makes production problem resolution easier and writing code simpler. It is much easier to troubleshoot problems when method input parameters and return values are available. It is also much simpler to write logging code knowing that log will first contain an entry statement with method name and source code line number from which it is possible to infer general context and meaning:
