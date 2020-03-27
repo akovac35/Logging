@@ -25,7 +25,7 @@ This library contains helpful resources for .NET Core and ASP.NET Core logging u
 
 * [com.github.akovac35.Logging.Serilog.AspNetCore](https://www.nuget.org/packages/com.github.akovac35.Logging.Serilog.AspNetCore/)
 
-	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.Serilog.AspNetCore.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging.Serilog.AspNetCore/) [![NuGet Downloads](https://img.shields.io/nuget/dt/com.github.akovac35.Logging.Serilog.AspNetCore.svg)](https://www.nuget.org/packages/com.github.akovac35.Logging.Serilog.AspNetCore/) 
+	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.Serilog.AspNetCore.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging.Serilog.AspNetCore/)
 
 ## Samples
 
