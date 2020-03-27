@@ -32,7 +32,7 @@ Advanced samples utilizing library functionality are provided here: [Logging.Sam
 
 Logging is an important aspect of any application framework. Compared to Java logging, configuring .NET Core and ASP.NET Core applications for logging seems trivial at first, until we encounter framework specifics related to async code execution that make it impossible to correlate log entries based on the thread id - async methods may switch threads during different stages of the execution, so it is not possible to distinguish which log entry belongs to a specific activity without some sort of log entry correlation being provided with each log entry. This logging library provides means with which it is possible to correlate application activity and log entries, and more.
 
-The following functionality is provided for Microsoft.Extensions.Logging:
+The following functionality **is provided for Microsoft.Extensions.Logging**:
 
 ### Invocation context logging
 
@@ -113,18 +113,21 @@ Logging method entry and exit is generally a good practice because it makes prod
 
 ```
 
-```cs
-using static com.github.akovac35.Logging.LoggerHelper<WebApp.Pages.Counter>
+```razor
+@using Microsoft.Extensions.Logging
+@using com.github.akovac35.Logging
+
+@inject ILogger<WebApp.Pages.Counter> logger
 
 private async Task IncrementCount()
 {
-    Here(l => l.Entering());
+    logger.Here(l => l.Entering());
 
     currentCount++;
     // No need to write which counter we are increasing, which method etc.
-    Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
+    logger.Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
 
-    Here(l => l.Exiting());
+    logger.Here(l => l.Exiting());
 }
 ```
 
@@ -204,9 +207,8 @@ For Razor pages, correlation can be retrieved with an instance of the ```HttpCon
 @using global::com.github.akovac35.Logging
 @using global::Shared.Mocks
 
-@using static global::com.github.akovac35.Logging.LoggerHelper<WebApp.Pages.Counter>
-
 @inject IHttpContextAccessor hc
+@inject ILogger<WebApp.Pages.Counter> logger
 
 <h1>Counter</h1>
 
@@ -221,16 +223,16 @@ For Razor pages, correlation can be retrieved with an instance of the ```HttpCon
 
     private async Task IncrementCount()
     {
-        Here(l => l.Entering());
+        logger.Here(l => l.Entering());
 
         currentCount++;
-        Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
+        logger.Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
 
         // Business logic call sample
         var blMock = new BusinessLogicMock<object>();
         await blMock.FirstLevelAsync(500);
 
-        Here(l => l.Exiting());
+        logger.Here(l => l.Exiting());
     }
 }
 ```
