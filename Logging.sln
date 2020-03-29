@@ -22,11 +22,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.Tests", "test\com.github.akovac35.Logging.Tests\com.github.akovac35.Logging.Tests.csproj", "{C383C22C-F615-4D2B-B184-5330C50BF2EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "com.github.akovac35.Logging.Tests.Shared", "test\com.github.akovac35.Logging.Tests.Shared\com.github.akovac35.Logging.Tests.Shared.csproj", "{8F8983D9-D289-4C88-98D6-CE091B6879BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.AspNetCore.Tests", "test\com.github.akovac35.Logging.AspNetCore.Tests\com.github.akovac35.Logging.AspNetCore.Tests.csproj", "{B33E651D-DCAE-4989-97F7-48DD7537C36F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "com.github.akovac35.Logging.AspNetCore.Tests", "test\com.github.akovac35.Logging.AspNetCore.Tests\com.github.akovac35.Logging.AspNetCore.Tests.csproj", "{B33E651D-DCAE-4989-97F7-48DD7537C36F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.Serilog.Tests", "test\com.github.akovac35.Logging.Serilog.Tests\com.github.akovac35.Logging.Serilog.Tests.csproj", "{2E0F8604-9E19-4840-AB53-4CD94495E352}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "com.github.akovac35.Logging.Serilog.Tests", "test\com.github.akovac35.Logging.Serilog.Tests\com.github.akovac35.Logging.Serilog.Tests.csproj", "{2E0F8604-9E19-4840-AB53-4CD94495E352}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.github.akovac35.Logging.Testing", "src\com.github.akovac35.Logging.Testing\com.github.akovac35.Logging.Testing.csproj", "{FDCD8BB1-5AB3-47C0-9B69-C448D7A4AC61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,10 +62,6 @@ Global
 		{C383C22C-F615-4D2B-B184-5330C50BF2EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C383C22C-F615-4D2B-B184-5330C50BF2EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C383C22C-F615-4D2B-B184-5330C50BF2EE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F8983D9-D289-4C88-98D6-CE091B6879BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F8983D9-D289-4C88-98D6-CE091B6879BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F8983D9-D289-4C88-98D6-CE091B6879BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F8983D9-D289-4C88-98D6-CE091B6879BC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B33E651D-DCAE-4989-97F7-48DD7537C36F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B33E651D-DCAE-4989-97F7-48DD7537C36F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B33E651D-DCAE-4989-97F7-48DD7537C36F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -74,6 +70,10 @@ Global
 		{2E0F8604-9E19-4840-AB53-4CD94495E352}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E0F8604-9E19-4840-AB53-4CD94495E352}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E0F8604-9E19-4840-AB53-4CD94495E352}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDCD8BB1-5AB3-47C0-9B69-C448D7A4AC61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDCD8BB1-5AB3-47C0-9B69-C448D7A4AC61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDCD8BB1-5AB3-47C0-9B69-C448D7A4AC61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDCD8BB1-5AB3-47C0-9B69-C448D7A4AC61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

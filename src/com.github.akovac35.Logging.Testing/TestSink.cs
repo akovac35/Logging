@@ -1,14 +1,14 @@
-
-
+﻿// Author: Microsoft, Aleksander Kovač
 
 using System;
 using System.Collections.Concurrent;
 
-namespace com.github.akovac35.Logging.Tests.Shared
+namespace com.github.akovac35.Logging.Testing
 {
     public class TestSink : ITestSink
     {
         private ConcurrentQueue<BeginScopeContext> _scopes;
+
         private ConcurrentQueue<WriteContext> _writes;
 
         public TestSink(
@@ -50,16 +50,6 @@ namespace com.github.akovac35.Logging.Tests.Shared
                 _scopes.Enqueue(context);
             }
             ScopeStarted?.Invoke(context);
-        }
-
-        public static bool EnableWithTypeName<T>(WriteContext context)
-        {
-            return context.LoggerName.Equals(typeof(T).FullName);
-        }
-
-        public static bool EnableWithTypeName<T>(BeginScopeContext context)
-        {
-            return context.LoggerName.Equals(typeof(T).FullName);
         }
     }
 }

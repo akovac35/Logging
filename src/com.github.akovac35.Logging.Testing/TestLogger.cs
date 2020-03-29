@@ -1,16 +1,18 @@
-
-
+﻿// Author: Microsoft, Aleksander Kovač
 
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace com.github.akovac35.Logging.Tests.Shared
+namespace com.github.akovac35.Logging.Testing
 {
     public class TestLogger : ILogger
     {
         private object _scope;
+
         private readonly ITestSink _sink;
+
         private readonly string _name;
+
         private readonly Func<LogLevel, bool> _filter;
 
         public TestLogger(string name, ITestSink sink, bool enabled)
@@ -70,7 +72,6 @@ namespace com.github.akovac35.Logging.Tests.Shared
 
             public void Dispose()
             {
-                // intentionally does nothing
             }
         }
     }

@@ -1,6 +1,8 @@
-﻿using com.github.akovac35.Logging.Tests.Shared;
+﻿using com.github.akovac35.Logging.Testing;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace com.github.akovac35.Logging.Tests
@@ -8,20 +10,24 @@ namespace com.github.akovac35.Logging.Tests
     [TestFixture]
     public class ILoggerExtensionsTest
     {
-        public static string TypeFullName { get; } = typeof(LoggerHelperTests).FullName;
-
         [OneTimeSetUp]
-        public void Setup()
+        public void OneTimeSetUp()
+        {
+        }
+
+        [SetUp]
+        public void SetUp()
         {
         }
 
         [Test]
-        public void AssertHereContextIsSet()
+        public void Here_LoggerScope_Exists()
         {
             var sink = new TestSink();
-            var logger = new TestLogger(TypeFullName, sink, enabled: true);
+            var logger = new TestLogger("", sink, enabled: true);
 
             logger.Here(l => l.LogInformation(""));
+            StackFrame stackFrame = new StackFrame(true);
 
             var context = sink.Scopes.ToArray()[0].Scope as System.Collections.Generic.KeyValuePair<string, object>[];
 
@@ -31,49 +37,67 @@ namespace com.github.akovac35.Logging.Tests
             Assert.AreEqual(MethodInfo.GetCurrentMethod().Name, context[0].Value);
 
             Assert.AreEqual(Constants.CallerLineNumber, context[2].Key);
-            Assert.AreNotEqual(-1, context[2].Value);
+            Assert.AreEqual(stackFrame.GetFileLineNumber() - 1, context[2].Value);
+        }
+
+        public static IEnumerable<object> EnteringParameterCases()
+        {
+            yield return new TestCaseData(new { Amount = 108, Message = "Hello" }).Returns("Entering: { Amount = 108, Message = Hello }");
+            yield return new TestCaseData(new TestingFake()).Returns("Entering: " + typeof(TestingFake).FullName);
+        }
+
+        [Test, TestCaseSource("EnteringParameterCases")]
+        public string Entering_ParameterSerialization_IsValid(object parameter)
+        {
+            var sink = new TestSink();
+            var logger = new TestLogger("", sink, enabled: true);
+
+            logger.Here(l => l.Entering(parameter));
+
+            return sink.Writes.ToArray()[0].Message;
         }
 
         [Test]
-        public void EnteringTests()
+        public void Entering_WithoutParameters_IsValid()
         {
             var sink = new TestSink();
-            var logger = new TestLogger(TypeFullName, sink, enabled: true);
+            var logger = new TestLogger("", sink, enabled: true);
 
             logger.Here(l => l.Entering());
-            Assert.AreEqual("Entering", sink.Writes.ToArray()[0].Message);
+            Assert.AreEqual("Entering", sink.Writes.ToArray()[0].Message);         
+        }
 
-            var x = new  { Amount = 108, Message = "Hello" };
+        public static IEnumerable<object> ExitingParameterCases()
+        {
+            yield return new TestCaseData(new { Amount = 108, Message = "Hello" }).Returns("Exiting: { Amount = 108, Message = Hello }");
+            yield return new TestCaseData(new TestingFake()).Returns("Exiting: " + typeof(TestingFake).FullName);
+        }
 
-            logger.Here(l => l.Entering(new { Amount = 108, Message = "Hello" }));
-            Assert.AreEqual("Entering: { Amount = 108, Message = Hello }", sink.Writes.ToArray()[1].Message);
+        [Test, TestCaseSource("ExitingParameterCases")]
+        public string Exiting_ParameterSerialization_IsValid(object parameter)
+        {
+            var sink = new TestSink();
+            var logger = new TestLogger("", sink, enabled: true);
 
-            logger.Here(l => l.EnteringSimpleFormat(new Testing()));
-            Assert.AreEqual("Entering: " + typeof(Testing).FullName, sink.Writes.ToArray()[2].Message);
+            logger.Here(l => l.Exiting(parameter));
+
+            return sink.Writes.ToArray()[0].Message;
         }
 
         [Test]
-        public void ExitingTests()
+        public void Exiting_WithoutParameters_IsValid()
         {
             var sink = new TestSink();
-            var logger = new TestLogger(TypeFullName, sink, enabled: true);
+            var logger = new TestLogger("", sink, enabled: true);
 
             logger.Here(l => l.Exiting());
             Assert.AreEqual("Exiting", sink.Writes.ToArray()[0].Message);
-
-            var x = new { Amount = 108, Message = "Hello" };
-
-            logger.Here(l => l.Exiting(new { Amount = 108, Message = "Hello" }));
-            Assert.AreEqual("Exiting: { Amount = 108, Message = Hello }", sink.Writes.ToArray()[1].Message);
-
-            logger.Here(l => l.ExitingSimpleFormat(new Testing()));
-            Assert.AreEqual("Exiting: " + typeof(Testing).FullName, sink.Writes.ToArray()[2].Message);
         }
 
-        class Testing
+        class TestingFake
         {
-            public int Amount { get; set; }
-            public string Message { get; set; }
+            public int Amount { get; set; } = 108;
+            public string Message { get; set; } = "Hello";
         }
     }
 }

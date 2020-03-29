@@ -61,7 +61,7 @@ It is important to note that instead of using reflection, invocation context is 
 
 ### Logger helper
 
-This library provides a static generic helper class ```LoggerHelper<T>``` using which it is possible to log application startup events or use it for straightforward logging inside types without having to inject a logger instance:
+This library provides a static generic helper class ```LoggerHelper<T>``` using which it is possible to log application startup events or perform limited logging inside types without having to inject a logger instance:
 
 ```cs
 using com.github.akovac35.Logging;
@@ -103,7 +103,7 @@ namespace ConsoleApp
 }
 ```
 
-**Do note that the ```LoggerFactoryProvider.LoggerFactory``` must be defined immediately when application is started but also updated when the logger framework is fully initialized**, to account for any changes during the initialization process (specifically for ASP.NET Core). ```LoggerHelper<T>``` should never be used inside static constructors or to initialize static logger instances.
+**Do note that the ```LoggerFactoryProvider.LoggerFactory``` must be defined immediately when application is started but also updated when the logger framework is fully initialized**, to account for any changes during the initialization process (specifically for ASP.NET Core). ```LoggerHelper<T>``` should never be used inside static constructors or its reference used to initialize variables.
 
 ### Method entry / exit logging
 
@@ -290,6 +290,34 @@ curl -i -H "Accept: application/json" -H "Content-Type: application/json" -H "x-
 [2020-03-23 00:26:57.348 +01:00] INF 4 12345678 <Microsoft.AspNetCore.Routing.EndpointMiddleware::> Executed endpoint '"WebApi.Controllers.WeatherForecastController.Get (WebApi)"'
 [2020-03-23 00:26:57.352 +01:00] INF 4 12345678 <Serilog.AspNetCore.RequestLoggingMiddleware::> HTTP "GET" "/weatherforecast" responded 200 in 61.7780 ms
 [2020-03-23 00:26:57.355 +01:00] INF 4  <Microsoft.AspNetCore.Hosting.Diagnostics::> Request finished in 68.0659ms 200 application/json; charset=utf-8
+```
+
+### Testing
+
+Sometimes it is necessary to use test logger implementation. This library contains test versions of relevant logger framework types:
+
+* ```TestSink```
+* ```TestLogger```
+* ```TestLogger<T>```
+* ```TestLoggerFactory```
+* ```TestLoggerProvider```
+
+```cs
+var sink = new TestSink();
+var logger = new TestLogger("FullTypeName", sink, enabled: true);
+
+logger.Here(l => l.LogInformation(""));
+StackFrame stackFrame = new StackFrame(true);
+
+var context = sink.Scopes.ToArray()[0].Scope as System.Collections.Generic.KeyValuePair<string, object>[];
+
+Assert.IsNotNull(context);
+
+Assert.AreEqual(Constants.CallerMemberName, context[0].Key);
+Assert.AreEqual(MethodInfo.GetCurrentMethod().Name, context[0].Value);
+
+Assert.AreEqual(Constants.CallerLineNumber, context[2].Key);
+Assert.AreEqual(stackFrame.GetFileLineNumber() - 1, context[2].Value);
 ```
 
 ### Logger framework specifics

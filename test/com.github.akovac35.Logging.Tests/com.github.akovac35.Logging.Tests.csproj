@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\com.github.akovac35.Logging.Testing\com.github.akovac35.Logging.Testing.csproj" />
     <ProjectReference Include="..\..\src\com.github.akovac35.Logging\com.github.akovac35.Logging.csproj" />
-    <ProjectReference Include="..\com.github.akovac35.Logging.Tests.Shared\com.github.akovac35.Logging.Tests.Shared.csproj" />
   </ItemGroup>
 
 </Project>

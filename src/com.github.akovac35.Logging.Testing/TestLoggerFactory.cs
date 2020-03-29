@@ -1,13 +1,13 @@
-
-
+﻿// Author: Microsoft, Aleksander Kovač
 
 using Microsoft.Extensions.Logging;
 
-namespace com.github.akovac35.Logging.Tests.Shared
+namespace com.github.akovac35.Logging.Testing
 {
     public class TestLoggerFactory : ILoggerFactory
     {
         private readonly ITestSink _sink;
+
         private readonly bool _enabled;
 
         public TestLoggerFactory(ITestSink sink, bool enabled)

@@ -9,15 +9,20 @@ using System.Threading.Tasks;
 namespace com.github.akovac35.Logging.AspNetCore.Tests.Correlation
 {
     [TestFixture]
-    public class CorrelationIdMiddlewareTests
+    public class CorrelationIdMiddlewareTest
     {
         [OneTimeSetUp]
-        public void Setup()
+        public void OneTimeSetUp()
+        {
+        }
+
+        [SetUp]
+        public void SetUp()
         {
         }
 
         [Test]
-        public async Task HasCorrelationIdAsync()
+        public async Task InvokeAsync_FindsCorrelationHeader()
         {
             var correlationId = "1234";
             var context = new DefaultHttpContext();

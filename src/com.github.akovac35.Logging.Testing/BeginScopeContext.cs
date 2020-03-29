@@ -1,7 +1,6 @@
+﻿// Author: Microsoft, Aleksander Kovač
 
-
-
-namespace com.github.akovac35.Logging.Tests.Shared
+namespace com.github.akovac35.Logging.Testing
 {
     public class BeginScopeContext
     {

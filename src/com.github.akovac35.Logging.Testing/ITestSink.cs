@@ -1,7 +1,9 @@
-﻿using System;
+﻿// Author: Microsoft, Aleksander Kovač
+
+using System;
 using System.Collections.Concurrent;
 
-namespace com.github.akovac35.Logging.Tests.Shared
+namespace com.github.akovac35.Logging.Testing
 {
     public interface ITestSink
     {

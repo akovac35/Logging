@@ -1,10 +1,9 @@
-
-
+﻿// Author: Microsoft, Aleksander Kovač
 
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace com.github.akovac35.Logging.Tests.Shared
+namespace com.github.akovac35.Logging.Testing
 {
     public class WriteContext
     {
