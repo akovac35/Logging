@@ -12,6 +12,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageIcon>.NET_Core_Logo.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
+    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

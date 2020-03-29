@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>Helpful resources for .NET Core and ASP.NET Core logging using various logger frameworks.</Description>
-    <VersionPrefix>1.0.3</VersionPrefix>
+    <VersionPrefix>1.0.5</VersionPrefix>
     <Authors>Aleksander Kovač</Authors>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <PackageTags>logging;serilog;nlog</PackageTags>
@@ -12,6 +12,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageIcon>.NET_Core_Logo.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
+    <PackageReleaseNotes>Updated Logging version.</PackageReleaseNotes>
   </PropertyGroup>
 
   
