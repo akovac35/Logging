@@ -7,6 +7,10 @@ This library contains helpful resources for .NET Core and ASP.NET Core logging u
 
 	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging/)
 
+* [com.github.akovac35.Logging.Testing](https://www.nuget.org/packages/com.github.akovac35.Logging.Testing/)
+
+	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.Testing.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging.Testing/)
+
 * [com.github.akovac35.Logging.AspNetCore](https://www.nuget.org/packages/com.github.akovac35.Logging.AspNetCore/)
 
 	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.AspNetCore.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging.AspNetCore/)
