@@ -39,12 +39,24 @@ namespace com.github.akovac35.Logging.Tests
         }
 
         [Test]
-        public void Logger_VerifyGetterCode_Works()
+        public void Logger_Getter_Works()
         {
             var sink = new TestSink();
             LoggerFactoryProvider.LoggerFactory = new TestLoggerFactory(sink, true);
 
-            Assert.IsInstanceOf<ILogger<LoggerHelperTest>>(LoggerHelper<LoggerHelperTest>.Logger);
+            // Just confirm that static fields of a generic static class are not shared between constructed types
+            Assert.IsInstanceOf<ILogger<A>>(LoggerHelper<A>.Logger);
+            Assert.IsInstanceOf<ILogger<B>>(LoggerHelper<B>.Logger);
+        }
+
+        class A
+        {
+
+        }
+
+        class B
+        {
+
         }
     }
 }
