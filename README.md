@@ -61,7 +61,29 @@ using static com.github.akovac35.Logging.LoggerHelper<WebApp.Pages.Counter>
 Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
 ```
 
-It is important to note that instead of using reflection, invocation context is determined with the help of compiler service attributes, which minimizes performance impact.
+It is important to note that instead of using reflection, invocation context is determined with the help of compiler service attributes, which minimizes performance impact. 
+
+Invocation context is passed to logger frameworks via ```ILogger.BeginScope()```:
+
+```cs
+using (logger.BeginScope(
+    new[] { new KeyValuePair<string, object>(Constants.CallerMemberName, callerMemberName),
+            new KeyValuePair<string, object>(Constants.CallerFilePath, callerFilePath),
+            new KeyValuePair<string, object>(Constants.CallerLineNumber, callerLineNumber)})
+    )
+    {
+        try
+        {
+            logAction(logger);
+        }
+        catch (Exception ex)
+        {
+            logger.LogTrace(ex, ex.Message);
+        }
+    }
+```
+
+This functionality can be disabled with ```LoggerLibraryConfiguration.ShouldHerePassInvocationContextToLoggerScope = false```.
 
 ### Logger helper
 
@@ -107,7 +129,9 @@ namespace ConsoleApp
 }
 ```
 
-**Do note that the ```LoggerFactoryProvider.LoggerFactory``` must be defined immediately when application is started but also updated when the logger framework is fully initialized**, to account for any changes during the initialization process (specifically for ASP.NET Core). ```LoggerHelper<T>``` should never be used inside static constructors or its reference used to initialize variables.
+**Do note that the ```LoggerFactoryProvider.LoggerFactory``` must be defined immediately when application is started but also updated when the logger framework is fully initialized**, to account for any changes during the initialization process (specifically for ASP.NET Core). Failing to do so will cause ```NullLoggerFactory``` to provide logger instances, which do not perform logging.
+
+```LoggerHelper<T>``` should never be used inside static constructors, because ```LoggerFactoryProvider.LoggerFactory``` is not yet ready, or its reference used to initialize variables (reference will be stale when ```LoggerFactoryProvider.LoggerFactory``` changes).
 
 ### Method entry / exit logging
 
@@ -160,7 +184,7 @@ public Task<WeatherForecast[]> GetForecastAsync(DateTime startDate)
 }
 ```
 
-Because method entry and exit logging can be quite verbose, the default log level used is ```Trace```. Method overloads are available so this can be changed, which is useful for use in APIs where request and response objects are generally always logged.
+Because method entry and exit logging can be quite verbose, the default log level used is ```Trace```. Method overloads are available so this can be changed, which is useful for use in APIs where request and response objects are generally always logged. ```ILogger``` extension method ```IsEnteringExitingEnabled``` can be used for testing if method entry and exit logging is enabled.
 
 **Do note that some objects, such as connections and requests, may require a more sophisticated approach than the one indicated here.** This is usualy because logging such objects may trigger an exception for some invoked properties, or it may cause performance problems. Either do not log such objects or use wrappers and only expose safe properties.
 
@@ -323,6 +347,42 @@ Assert.AreEqual(MethodInfo.GetCurrentMethod().Name, context[0].Value);
 Assert.AreEqual(Constants.CallerLineNumber, context[2].Key);
 Assert.AreEqual(stackFrame.GetFileLineNumber() - 1, context[2].Value);
 ```
+
+```TestLogger``` is quite useful for testing - test code should always have loggers fully enabled to verify logging does not introduce problems we are not aware of:
+
+```cs
+using com.github.akovac35.Logging.Testing;
+using Microsoft.Extensions.Logging;
+using NUnit.Framework;
+
+namespace com.github.akovac35.AdapterInterceptor.Tests
+{
+    public static class TestHelper
+    {
+        public static ILoggerFactory LoggerFactory
+        {
+            get
+            {
+                var sink = new TestSink();
+                sink.MessageLogged += Sink_MessageLogged;
+                return new TestLoggerFactory(sink, true);
+            }
+        }
+
+        private static void Sink_MessageLogged(WriteContext obj)
+        {
+            KeyValuePair<string, object>[] loggerScope = obj.Scope as KeyValuePair<string, object>[];
+            TestContext.WriteLine($"[{DateTime.Now.ToLongTimeString()}] {obj.LogLevel.ToString()} <{obj.LoggerName}:{loggerScope?[0].Value}:{loggerScope?[2].Value}> {(obj.Exception != null ? obj.Exception.Message : obj.Message)}");
+        }
+    }
+}
+
+// ...
+// var myInstance = new InstanceOfX(TestHelper.LoggerFactory);
+```
+
+![this](Resources/test_logging.jpg)
+
 
 ### Logger framework specifics
 

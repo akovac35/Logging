@@ -1,4 +1,10 @@
-﻿using com.github.akovac35.Logging.Testing;
+﻿// License:
+// Apache License Version 2.0, January 2004
+
+// Authors:
+//   Aleksander Kovač
+
+using com.github.akovac35.Logging.Testing;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -64,7 +70,7 @@ namespace com.github.akovac35.Logging.Tests
             var logger = new TestLogger("", sink, enabled: true);
 
             logger.Here(l => l.Entering());
-            Assert.AreEqual("Entering", sink.Writes.ToArray()[0].Message);         
+            Assert.AreEqual("Entering", sink.Writes.ToArray()[0].Message);
         }
 
         public static IEnumerable<object> ExitingParameterCases()
@@ -97,6 +103,7 @@ namespace com.github.akovac35.Logging.Tests
         class TestingFake
         {
             public int Amount { get; set; } = 108;
+
             public string Message { get; set; } = "Hello";
         }
     }

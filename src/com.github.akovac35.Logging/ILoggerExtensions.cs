@@ -1,4 +1,8 @@
-﻿// Author: Aleksander Kovač
+﻿// License:
+// Apache License Version 2.0, January 2004
+
+// Authors:
+//   Aleksander Kovač
 
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,11 +15,25 @@ namespace com.github.akovac35.Logging
     {
         public static void Here(this ILogger logger, Action<ILogger> logAction, [CallerMemberName] string callerMemberName = "unknown", [CallerFilePath] string callerFilePath = "unknown", [CallerLineNumber] int callerLineNumber = -1)
         {
-            using (logger.BeginScope(
+            if (LoggerLibraryConfiguration.ShouldHerePassInvocationContextToLoggerScope)
+            {
+                using (logger.BeginScope(
                new[] { new KeyValuePair<string, object>(Constants.CallerMemberName, callerMemberName),
                         new KeyValuePair<string, object>(Constants.CallerFilePath, callerFilePath),
                         new KeyValuePair<string, object>(Constants.CallerLineNumber, callerLineNumber)})
                 )
+                {
+                    try
+                    {
+                        logAction(logger);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogTrace(ex, ex.Message);
+                    }
+                }
+            }
+            else
             {
                 try
                 {
@@ -104,6 +122,11 @@ namespace com.github.akovac35.Logging
         public static void ExitingSimpleFormat(this ILogger logger, LogLevel level, params object[] args)
         {
             logger.Log(level, "Exiting: {args}", args);
+        }
+
+        public static bool IsEnteringExitingEnabled(this ILogger logger)
+        {
+            return logger.IsEnabled(LogLevel.Trace);
         }
     }
 }

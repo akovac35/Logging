@@ -1,3 +1,9 @@
+﻿// License:
+// Apache License Version 2.0, January 2004
+
+// Authors:
+//   Aleksander Kovač
+
 using com.github.akovac35.Logging.Testing;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
@@ -30,7 +36,7 @@ namespace com.github.akovac35.Logging.Tests
             var context = sink.Scopes.ToArray()[0].Scope as System.Collections.Generic.KeyValuePair<string, object>[];
 
             Assert.IsNotNull(context);
-            
+
             Assert.AreEqual(Constants.CallerMemberName, context[0].Key);
             Assert.AreEqual(MethodInfo.GetCurrentMethod().Name, context[0].Value);
 
@@ -51,12 +57,10 @@ namespace com.github.akovac35.Logging.Tests
 
         class A
         {
-
         }
 
         class B
         {
-
         }
     }
 }

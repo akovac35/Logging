@@ -1,4 +1,8 @@
-﻿// Author: Aleksander Kovač
+﻿// License:
+// Apache License Version 2.0, January 2004
+
+// Authors:
+//   Aleksander Kovač
 
 using Microsoft.Extensions.Logging;
 using System;
@@ -38,16 +42,32 @@ namespace com.github.akovac35.Logging
         }
 
         private static object _getLoggerLock = new object();
+
         private static volatile ILogger _logger;
+
         private static WeakReference<ILoggerFactory> _loggerFactoryWhichCreatedLogger = new WeakReference<ILoggerFactory>(null);
 
         public static void Here(Action<ILogger> logAction, [CallerMemberName] string callerMemberName = "unknown", [CallerFilePath] string callerFilePath = "unknown", [CallerLineNumber] int callerLineNumber = -1)
         {
-            using (Logger.BeginScope(
+            if (LoggerLibraryConfiguration.ShouldHerePassInvocationContextToLoggerScope)
+            {
+                using (Logger.BeginScope(
                new[] { new KeyValuePair<string, object>(Constants.CallerMemberName, callerMemberName),
                         new KeyValuePair<string, object>(Constants.CallerFilePath, callerFilePath),
                         new KeyValuePair<string, object>(Constants.CallerLineNumber, callerLineNumber)})
                 )
+                {
+                    try
+                    {
+                        logAction(Logger);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogTrace(ex, ex.Message);
+                    }
+                }
+            }
+            else
             {
                 try
                 {

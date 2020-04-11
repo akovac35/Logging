@@ -1,4 +1,10 @@
-﻿using com.github.akovac35.Logging.AspNetCore.Correlation;
+﻿// License:
+// Apache License Version 2.0, January 2004
+
+// Authors:
+//   Aleksander Kovač
+
+using com.github.akovac35.Logging.AspNetCore.Correlation;
 using com.github.akovac35.Logging.Correlation;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -30,7 +36,7 @@ namespace com.github.akovac35.Logging.AspNetCore.Tests.Correlation
             servicesMock.Setup(sp => sp.GetService(typeof(ICorrelationProvider))).Returns(new CorrelationProvider());
             context.RequestServices = servicesMock.Object;
             context.Request.Headers.Add("X-Request-Id", correlationId);
-            
+
             var middleware = new CorrelationIdMiddleware((innerHttpContext) => Task.FromResult(0));
             await middleware.InvokeAsync(context);
 

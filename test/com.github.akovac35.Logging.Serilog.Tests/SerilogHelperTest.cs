@@ -1,4 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿// License:
+// Apache License Version 2.0, January 2004
+
+// Authors:
+//   Aleksander Kovač
+
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using Serilog;
 using Serilog.Core;
@@ -21,7 +27,9 @@ namespace com.github.akovac35.Logging.Serilog.Tests
         }
 
         private string serilogConfig = "serilog.json";
+
         private string validJson = "serilog_valid.json";
+
         private string invalidJson = "serilog_invalid.json";
 
         [Test]

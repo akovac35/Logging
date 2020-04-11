@@ -1,4 +1,9 @@
-﻿// Author: Microsoft, Aleksander Kovač
+﻿// License:
+// Apache License Version 2.0, January 2004
+
+// Authors:
+//   Aleksander Kovač
+//   Microsoft
 
 namespace com.github.akovac35.Logging.Testing
 {

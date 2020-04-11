@@ -1,4 +1,10 @@
-﻿using Serilog;
+﻿// License:
+// Apache License Version 2.0, January 2004
+
+// Authors:
+//   Aleksander Kovač
+
+using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using System;
@@ -6,7 +12,7 @@ using System.Collections.Generic;
 
 namespace com.github.akovac35.Logging.Serilog.Tests
 {
-    public class SilentLogger: ILogger
+    public class SilentLogger : ILogger
     {
         public SilentLogger()
         {
