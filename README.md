@@ -37,6 +37,18 @@ Advanced samples utilizing library functionality are provided here: [Logging.Sam
 
 ## Contents
 
+- [Logging](#logging)
+  - [Samples](#samples)
+  - [Contents](#contents)
+    - [Invocation context logging](#invocation-context-logging)
+    - [Logger helper](#logger-helper)
+    - [Method entry and exit logging](#method-entry-and-exit-logging)
+    - [Log correlation](#log-correlation)
+    - [Unit test logging](#unit-test-logging)
+    - [Logger framework specifics](#logger-framework-specifics)
+  - [Contributing](#contributing)
+  - [License](#license)
+
 Logging is an important aspect of any application framework. Compared to Java logging, configuring .NET Core and ASP.NET Core applications for logging seems trivial at first, until we encounter framework specifics related to async code execution that make it impossible to correlate log entries based on the thread id - async methods may switch threads during different stages of the execution, so it is not possible to distinguish which log entry belongs to a specific activity without some sort of log entry correlation being provided with each log entry. This logging library provides means with which it is possible to correlate application activity and log entries, and more.
 
 The following functionality **is provided for Microsoft.Extensions.Logging**:
@@ -133,7 +145,7 @@ namespace ConsoleApp
 
 ```LoggerHelper<T>``` should never be used inside static constructors, because ```LoggerFactoryProvider.LoggerFactory``` is not yet ready, or its reference used to initialize variables (reference will be stale when ```LoggerFactoryProvider.LoggerFactory``` changes).
 
-### Method entry / exit logging
+### Method entry and exit logging
 
 Logging method entry and exit is generally a good practice because it makes production problem resolution easier and writing code simpler. It is much easier to troubleshoot problems when method input parameters and return values are available. It is also much simpler to write logging code knowing that log will first contain an entry statement with method name and source code line number from which it is possible to infer general context and meaning:
 
@@ -320,7 +332,7 @@ curl -i -H "Accept: application/json" -H "Content-Type: application/json" -H "x-
 [2020-03-23 00:26:57.355 +01:00] INF 4  <Microsoft.AspNetCore.Hosting.Diagnostics::> Request finished in 68.0659ms 200 application/json; charset=utf-8
 ```
 
-### Testing
+### Unit test logging
 
 Sometimes it is necessary to use test logger implementation. This library contains test versions of relevant logger framework types:
 
