@@ -33,7 +33,7 @@ This library contains helpful resources for .NET Core and ASP.NET Core logging u
 
 ## Status
 
-<p><span style="color: #000000; background-color: #00ff00;">PRODUCTION READY</span></p>  starting from version 1.0.5.
+PRODUCTION READY starting from version 1.0.5.
 
 ## Samples
 
