@@ -42,6 +42,7 @@ Advanced samples utilizing library functionality are provided here: [Logging.Sam
 ## Contents
 
 - [Logging](#logging)
+  - [Status](#status)
   - [Samples](#samples)
   - [Contents](#contents)
     - [Invocation context logging](#invocation-context-logging)
