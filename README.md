@@ -31,6 +31,10 @@ This library contains helpful resources for .NET Core and ASP.NET Core logging u
 
 	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.Serilog.AspNetCore.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging.Serilog.AspNetCore/)
 
+## Status
+
+<p><span style="color: #000000; background-color: #00ff00;">PRODUCTION READY</span></p>  starting from version 1.0.5.
+
 ## Samples
 
 Advanced samples utilizing library functionality are provided here: [Logging.Samples](https://github.com/akovac35/Logging.Samples)
@@ -75,7 +79,7 @@ Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
 
 It is important to note that instead of using reflection, invocation context is determined with the help of compiler service attributes, which minimizes performance impact. 
 
-Invocation context is passed to logger frameworks via ```ILogger.BeginScope()```:
+When this functionality is not disabled, invocation context is passed to logger frameworks via ```ILogger.BeginScope()```, as follows:
 
 ```cs
 using (logger.BeginScope(
@@ -95,7 +99,7 @@ using (logger.BeginScope(
     }
 ```
 
-This functionality can be disabled with ```LoggerLibraryConfiguration.ShouldHerePassInvocationContextToLoggerScope = false```.
+Invocation context capture can be disabled by setting ```LoggerLibraryConfiguration.ShouldHerePassInvocationContextToLoggerScope = false```.
 
 ### Logger helper
 
