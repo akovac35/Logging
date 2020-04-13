@@ -70,12 +70,12 @@ This library includes ```Here(Action<ILogger> logAction)``` methods which do jus
 
 ```cs
 using com.github.akovac35.Logging;
-_logger.Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
+_logger.Here(l => l.LogInformation("currentCount: {0}", currentCount));
 
 //or
 
 using static com.github.akovac35.Logging.LoggerHelper<WebApp.Pages.Counter>
-Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
+Here(l => l.LogInformation("currentCount: {0}", currentCount));
 ```
 
 It is important to note that instead of using reflection, invocation context is determined with the help of compiler service attributes, which minimizes performance impact. 
@@ -173,7 +173,7 @@ private async Task IncrementCount()
 
     currentCount++;
     // No need to write which counter we are increasing, which method etc.
-    logger.Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
+    logger.Here(l => l.LogInformation("currentCount: {0}", currentCount));
 
     logger.Here(l => l.Exiting());
 }
@@ -274,7 +274,7 @@ For Razor pages, correlation can be retrieved with an instance of the ```HttpCon
         logger.Here(l => l.Entering());
 
         currentCount++;
-        logger.Here(l => l.LogInformation("currentCount: {currentCount}", currentCount));
+        logger.Here(l => l.LogInformation("currentCount: {0}", currentCount));
 
         // Business logic call sample
         var blMock = new BusinessLogicMock<object>();
@@ -299,7 +299,7 @@ public async Task<WeatherForecast[]> Get()
     _logger.Here(l => l.Entering());
 
     var forecasts = await _forecastService.GetForecastAsync(DateTime.Now);
-    _logger.Here(l => l.LogInformation("CorrelationId for a request instance can be obtained with HttpContextAccessor: {@correlationId}", _contextAccessor.GetCorrelationId()));
+    _logger.Here(l => l.LogInformation("CorrelationId for a request instance can be obtained with HttpContextAccessor: {@0}", _contextAccessor.GetCorrelationId()));
 
     _logger.Here(l => l.Exiting(forecasts));
     return forecasts;
@@ -407,7 +407,39 @@ namespace com.github.akovac35.AdapterInterceptor.Tests
 * Serilog enricher and NLog layout renderer utilizing ```CorrelationProvider```,
 * Serilog configuration monitor for settings file updates. 
 
+### Message template examples
 
+There are some specifics regarding proper message template use with ```Microsoft.Extensions.Logging.ILogger```, specifically regarding how params and array types are processed. Correct examples are provided below:
+
+```cs
+Action<Microsoft.Extensions.Logging.ILogger> LogInformationWithType = (l) => l.LogInformation("Testing: {@0}, {@1}", new TestType(), "next arg");
+yield return new TestCaseData(nameof(LogInformationWithType), LogInformationWithType).Returns("Testing: {\"TestString\":\"xyz\", \"TestNumber\":\"123\"}, \"next arg\"");
+
+Action<Microsoft.Extensions.Logging.ILogger> LogInformationWithTypeSimpleFormat = (l) => l.LogInformation("Testing: {0}, {1}", new TestType(), "next arg");
+yield return new TestCaseData(nameof(LogInformationWithTypeSimpleFormat), LogInformationWithTypeSimpleFormat).Returns("Testing: com.github.akovac35.Logging.NLog.Tests.TestType, next arg");
+
+Action<Microsoft.Extensions.Logging.ILogger> LogInformationWithAnonType = (l) => l.LogInformation("Testing: {@0}", new { Amount = 108, Message = "Hello" });
+yield return new TestCaseData(nameof(LogInformationWithAnonType), LogInformationWithAnonType).Returns("Testing: {\"Amount\":108, \"Message\":\"Hello\"}");
+
+Action<Microsoft.Extensions.Logging.ILogger> SimpleLogInformationWithAnonType = (l) => l.LogInformation("Testing: {0}", new { Amount = 108, Message = "Hello" });
+yield return new TestCaseData(nameof(SimpleLogInformationWithAnonType), SimpleLogInformationWithAnonType).Returns("Testing: { Amount = 108, Message = Hello }");
+
+Action<Microsoft.Extensions.Logging.ILogger> LogInformationArray = (l) => l.LogInformation("Testing: {@0}", new object[] { new TestType[] { new TestType(), new TestType() } });
+yield return new TestCaseData(nameof(LogInformationArray), LogInformationArray).Returns("Testing: [{\"TestString\":\"xyz\", \"TestNumber\":\"123\"},{\"TestString\":\"xyz\", \"TestNumber\":\"123\"}]");
+
+Action<Microsoft.Extensions.Logging.ILogger> SimpleLogInformationArray = (l) => l.LogInformation("Testing: {0}", new object[] { new TestType[] { new TestType(), new TestType() } });
+yield return new TestCaseData(nameof(SimpleLogInformationArray), SimpleLogInformationArray).Returns("Testing: com.github.akovac35.Logging.NLog.Tests.TestType[]");
+
+// https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
+// Will log only the first array item
+Action<Microsoft.Extensions.Logging.ILogger> LogInformationArrayIncorrect = (l) => l.LogInformation("Testing: {@0}", new TestType[] { new TestType(), new TestType() });
+yield return new TestCaseData(nameof(LogInformationArrayIncorrect), LogInformationArrayIncorrect).Returns("Testing: {\"TestString\":\"xyz\", \"TestNumber\":\"123\"}");
+
+// https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
+// Will log only the first array item
+Action<Microsoft.Extensions.Logging.ILogger> SimpleLogInformationArrayIncorrect = (l) => l.LogInformation("Testing: {0}", new TestType[] { new TestType(), new TestType() });
+yield return new TestCaseData(nameof(SimpleLogInformationArrayIncorrect), SimpleLogInformationArrayIncorrect).Returns("Testing: com.github.akovac35.Logging.NLog.Tests.TestType");
+```
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

@@ -24,6 +24,8 @@
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="Serilog.Sinks.InMemory" Version="0.3.0" />
+    <PackageReference Include="Serilog.Sinks.InMemory.Assertions" Version="0.4.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -63,7 +63,7 @@ namespace com.github.akovac35.Logging.Serilog
 
                 Log.Logger = newLogger;
 
-                GetLogger().Here(l => l.LogInformation("Updated logger: {@configuration}", configuration));
+                GetLogger().Here(l => l.LogInformation("Updated logger: {@0}", configuration));
             }
             catch (Exception ex)
             {

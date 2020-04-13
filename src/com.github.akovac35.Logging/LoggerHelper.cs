@@ -63,7 +63,7 @@ namespace com.github.akovac35.Logging
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogTrace(ex, ex.Message);
+                        Logger.LogTrace(ex, "Here");
                     }
                 }
             }
@@ -75,7 +75,7 @@ namespace com.github.akovac35.Logging
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogTrace(ex, ex.Message);
+                    Logger.LogTrace(ex, "Here");
                 }
             }
         }
