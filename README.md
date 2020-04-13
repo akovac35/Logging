@@ -1,5 +1,5 @@
 # Logging
-This library contains helpful resources for .NET Core and ASP.NET Core logging using various logger frameworks.
+This library contains helpful resources for .NET Core and ASP.NET Core logging using various logger frameworks and ```Microsoft.Extensions.Logging.ILogger``` interface.
 
 ![this](Resources/.NET_Core_Logo_small.png)
 
