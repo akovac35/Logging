@@ -441,6 +441,8 @@ Action<Microsoft.Extensions.Logging.ILogger> SimpleLogInformationArrayIncorrect 
 yield return new TestCaseData(nameof(SimpleLogInformationArrayIncorrect), SimpleLogInformationArrayIncorrect).Returns("Testing: com.github.akovac35.Logging.NLog.Tests.TestType");
 ```
 
+In general, when logging arrays, they should either be an explicit ```object[]``` or they should be wrapped: ```l.LogInformation("Testing: {@0}", new object[] { new TestType[] { new TestType(), new TestType() } });```.
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
