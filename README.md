@@ -51,6 +51,7 @@ Advanced samples utilizing library functionality are provided here: [Logging.Sam
     - [Log correlation](#log-correlation)
     - [Unit test logging](#unit-test-logging)
     - [Logger framework specifics](#logger-framework-specifics)
+    - [Message template examples](#message-template-examples)
   - [Contributing](#contributing)
   - [License](#license)
 
