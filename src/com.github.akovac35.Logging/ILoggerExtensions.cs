@@ -51,9 +51,12 @@ namespace com.github.akovac35.Logging
         {
             try
             {
-                // new object[] { args } is required to log all args items and not just the first one
-                // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
-                logger.LogTrace("Entering: {@0}", new object[] { args });
+                if (logger.IsEnabled(LogLevel.Trace))
+                {
+                    // new object[] { args } is required to log all args items and not just the first one
+                    // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
+                    logger.LogTrace("Entering: {@0}", new object[] { args });
+                }
             }
             catch (Exception ex)
             {
@@ -63,9 +66,12 @@ namespace com.github.akovac35.Logging
 
         public static void EnteringSimpleFormat(this ILogger logger, params object[] args)
         {
-            // new object[] { args } is required to log all args items and not just the first one
-            // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
-            logger.LogTrace("Entering: {0}", new object[] { args });
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                // new object[] { args } is required to log all args items and not just the first one
+                // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
+                logger.LogTrace("Entering: {0}", new object[] { args });
+            }
         }
 
         public static void Entering(this ILogger logger)
@@ -77,9 +83,12 @@ namespace com.github.akovac35.Logging
         {
             try
             {
-                // new object[] { args } is required to log all args items and not just the first one
-                // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
-                logger.Log(level, "Entering: {@0}", new object[] { args });
+                if (logger.IsEnabled(level))
+                {
+                    // new object[] { args } is required to log all args items and not just the first one
+                    // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
+                    logger.Log(level, "Entering: {@0}", new object[] { args });
+                }
             }
             catch (Exception ex)
             {
@@ -89,18 +98,24 @@ namespace com.github.akovac35.Logging
 
         public static void EnteringSimpleFormat(this ILogger logger, LogLevel level, params object[] args)
         {
-            // new object[] { args } is required to log all args items and not just the first one
-            // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
-            logger.Log(level, "Entering: {0}", new object[] { args });
+            if (logger.IsEnabled(level))
+            {
+                // new object[] { args } is required to log all args items and not just the first one
+                // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
+                logger.Log(level, "Entering: {0}", new object[] { args });
+            }
         }
 
         public static void Exiting(this ILogger logger, params object[] args)
         {
             try
             {
-                // new object[] { args } is required to log all args items and not just the first one
-                // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
-                logger.LogTrace("Exiting: {@0}", new object[] { args });
+                if (logger.IsEnabled(LogLevel.Trace))
+                {
+                    // new object[] { args } is required to log all args items and not just the first one
+                    // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
+                    logger.LogTrace("Exiting: {@0}", new object[] { args });
+                }
             }
             catch (Exception ex)
             {
@@ -110,9 +125,12 @@ namespace com.github.akovac35.Logging
 
         public static void ExitingSimpleFormat(this ILogger logger, params object[] args)
         {
-            // new object[] { args } is required to log all args items and not just the first one
-            // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
-            logger.LogTrace("Exiting: {0}", new object[] { args });
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                // new object[] { args } is required to log all args items and not just the first one
+                // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
+                logger.LogTrace("Exiting: {0}", new object[] { args });
+            }
         }
 
         public static void Exiting(this ILogger logger)
@@ -124,9 +142,12 @@ namespace com.github.akovac35.Logging
         {
             try
             {
-                // new object[] { args } is required to log all args items and not just the first one
-                // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
-                logger.Log(level, "Exiting: {@0}", new object[] { args });
+                if (logger.IsEnabled(level))
+                {
+                    // new object[] { args } is required to log all args items and not just the first one
+                    // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
+                    logger.Log(level, "Exiting: {@0}", new object[] { args });
+                }
             }
             catch (Exception ex)
             {
@@ -136,9 +157,12 @@ namespace com.github.akovac35.Logging
 
         public static void ExitingSimpleFormat(this ILogger logger, LogLevel level, params object[] args)
         {
-            // new object[] { args } is required to log all args items and not just the first one
-            // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
-            logger.Log(level, "Exiting: {0}", new object[] { args });
+            if (logger.IsEnabled(level))
+            {
+                // new object[] { args } is required to log all args items and not just the first one
+                // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
+                logger.Log(level, "Exiting: {0}", new object[] { args });
+            }
         }
 
         public static bool IsEnteringExitingEnabled(this ILogger logger)
