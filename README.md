@@ -202,7 +202,7 @@ public Task<WeatherForecast[]> GetForecastAsync(DateTime startDate)
 }
 ```
 
-Because method entry and exit logging can be quite verbose, the default log level used is ```Trace```. Method overloads are available so this can be changed, which is useful for use in APIs where request and response objects are generally always logged. ```ILogger``` extension method ```IsEnteringExitingEnabled``` can be used for testing if method entry and exit logging is enabled.
+Because method entry and exit logging can be quite verbose, the default log level used is ```Trace```. Method overloads are available so this can be changed, which is useful for use in APIs where request and response objects are generally always logged. Benchmarking revealed that invocation overhead of ```_logger.Here(Action<ILogger> logAction)``` versus direct logger method invocation is about 30%, which is negligible. ```ILogger``` extension method ```IsEnteringExitingEnabled``` can be used for testing if method entry and exit logging is enabled - this is useful when preprocessing logger inputs.
 
 **Do note that some objects, such as connections and requests, may require a more sophisticated approach than the one indicated here.** This is usualy because logging such objects may trigger an exception for some invoked properties, or it may cause performance problems. Either do not log such objects or use wrappers and only expose safe properties.
 

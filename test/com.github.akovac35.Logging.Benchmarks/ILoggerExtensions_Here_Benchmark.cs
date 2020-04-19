@@ -18,18 +18,18 @@ namespace com.github.akovac35.Logging.Benchmarks
         [Benchmark(Baseline = true)]
         public DateTime EnteringExitingWithoutHere()
         {
-            _logger.Entering();
+            _logger.Entering(DateTime.Now);
 
-            _logger.Exiting();
+            _logger.Exiting(DateTime.Now);
             return DateTime.Now;
         }
 
         [Benchmark]
         public DateTime EnteringExitingWithHere()
         {
-            _logger.Here(l => l.Entering());
+            _logger.Here(l => l.Entering(DateTime.Now));
 
-            _logger.Here(l => l.Exiting());
+            _logger.Here(l => l.Exiting(DateTime.Now));
             return DateTime.Now;
         }
     }
