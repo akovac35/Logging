@@ -36,3 +36,6 @@ Logs/
 
 # Visual Studio 2015
 .vs/
+
+# BenchmarkDotNet
+BenchmarkDotNet.Artifacts/

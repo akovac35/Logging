@@ -12,8 +12,9 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageIcon>.NET_Core_Logo.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>- Minor performance optimization,
-- updated project description.</PackageReleaseNotes>
+    <PackageReleaseNotes>- Minor performance optimizations,
+- updated project description,
+- added benchmarks.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
