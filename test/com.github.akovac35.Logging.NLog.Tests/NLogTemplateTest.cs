@@ -101,12 +101,12 @@ namespace com.github.akovac35.Logging.NLog.Tests
             Action<Microsoft.Extensions.Logging.ILogger> SimpleLogInformationArray = (l) => l.LogInformation("Testing: {0}", new object[] { new TestType[] { new TestType(), new TestType() } });
             yield return new TestCaseData(nameof(SimpleLogInformationArray), SimpleLogInformationArray).Returns("Testing: com.github.akovac35.Logging.NLog.Tests.TestType[]");
 
-            // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
+            // https://docs.microsoft.com/en-us/dotnet/api/system.string.format?view=netcore-3.1#System_String_Format_System_String_System_Object___
             // Will log only the first array item
             Action<Microsoft.Extensions.Logging.ILogger> LogInformationArrayIncorrect = (l) => l.LogInformation("Testing: {@0}", new TestType[] { new TestType(), new TestType() });
             yield return new TestCaseData(nameof(LogInformationArrayIncorrect), LogInformationArrayIncorrect).Returns("Testing: {\"TestString\":\"xyz\", \"TestNumber\":\"123\"}");
 
-            // https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
+            // https://docs.microsoft.com/en-us/dotnet/api/system.string.format?view=netcore-3.1#System_String_Format_System_String_System_Object___
             // Will log only the first array item
             Action<Microsoft.Extensions.Logging.ILogger> SimpleLogInformationArrayIncorrect = (l) => l.LogInformation("Testing: {0}", new TestType[] { new TestType(), new TestType() });
             yield return new TestCaseData(nameof(SimpleLogInformationArrayIncorrect), SimpleLogInformationArrayIncorrect).Returns("Testing: com.github.akovac35.Logging.NLog.Tests.TestType");

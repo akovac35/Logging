@@ -410,39 +410,52 @@ namespace com.github.akovac35.AdapterInterceptor.Tests
 
 ### Message template examples
 
-There are some specifics regarding proper message template use with ```Microsoft.Extensions.Logging.ILogger```, specifically regarding how params and array types are processed. Correct examples are provided below:
+There are some specifics regarding proper message template use with ```Microsoft.Extensions.Logging.ILogger```, specifically regarding how params and array types are processed. The following are general rules:
 
-```cs
-Action<Microsoft.Extensions.Logging.ILogger> LogInformationWithType = (l) => l.LogInformation("Testing: {@0}, {@1}", new TestType(), "next arg");
-yield return new TestCaseData(nameof(LogInformationWithType), LogInformationWithType).Returns("Testing: {\"TestString\":\"xyz\", \"TestNumber\":\"123\"}, \"next arg\"");
+* Use `{@0}` placeholder for argument destructuring (serialization) and `{0}` placeholder for ToString() argument method invocation,
+* except for entering / exiting methods, logging multiple arguments requires multiple placeholders: `LogInformation("Testing: {@0}, {@1}", arg1, arg2)`,
+* except for entering / exiting methods, arrays should be wrapped for logging; the following will render only the first array element: `LogInformation("Testing: {@0}", new TestType[] { new TestType(), new TestType() })`. The following will work as intended: `LogInformation("Testing: {@0}", new object[] { new TestType[] { new TestType(), new TestType() } })`.
 
-Action<Microsoft.Extensions.Logging.ILogger> LogInformationWithTypeSimpleFormat = (l) => l.LogInformation("Testing: {0}, {1}", new TestType(), "next arg");
-yield return new TestCaseData(nameof(LogInformationWithTypeSimpleFormat), LogInformationWithTypeSimpleFormat).Returns("Testing: com.github.akovac35.Logging.NLog.Tests.TestType, next arg");
+Rendering examples for Serilog are provided below:
 
-Action<Microsoft.Extensions.Logging.ILogger> LogInformationWithAnonType = (l) => l.LogInformation("Testing: {@0}", new { Amount = 108, Message = "Hello" });
-yield return new TestCaseData(nameof(LogInformationWithAnonType), LogInformationWithAnonType).Returns("Testing: {\"Amount\":108, \"Message\":\"Hello\"}");
+<table>
+<thead>
+  <tr>
+    <th>Logger invocation</th>
+    <th>Rendered message</th>
+  </tr>
+</thead>
+<tbody>
+<tr><td>ILogger.Entering(1, 2, 3)</td><td>Entering: [1, 2, 3]</td></tr>
+<tr><td>ILogger.Entering(LogLeveILogger.Information, 1, 2, 3)</td><td>Entering: [1, 2, 3]</td></tr>
+<tr><td>ILogger.Entering(1, typeof(int), 3)</td><td>Entering: [1, System.Int32, 3]</td></tr>
+<tr><td>ILogger.Entering(LogLeveILogger.Information, 1, typeof(int), 3)</td><td>Entering: [1, System.Int32, 3]</td></tr>
+<tr><td>ILogger.Entering()</td><td>Entering</td></tr>
+<tr><td>ILogger.EnteringSimpleFormat(1, 2, 3)</td><td>Entering: [1, 2, 3]</td></tr>
+<tr><td>ILogger.EnteringSimpleFormat(LogLeveILogger.Information, 1, 2, 3)</td><td>Entering: [1, 2, 3]</td></tr>
+<tr><td>ILogger.EnteringSimpleFormat(1, typeof(int), 3)</td><td>Entering: [1, "System.Int32", 3]</td></tr>
+<tr><td>ILogger.EnteringSimpleFormat(LogLeveILogger.Information, 1, typeof(int), 3)</td><td>Entering: [1, "System.Int32", 3]</td></tr>
+<tr><td>ILogger.Exiting(1, 2, 3)</td><td>Exiting: [1, 2, 3]</td></tr>
+<tr><td>ILogger.Exiting(LogLeveILogger.Information, 1, 2, 3)</td><td>Exiting: [1, 2, 3]</td></tr>
+<tr><td>ILogger.Exiting(1, typeof(int), 3)</td><td>Exiting: [1, System.Int32, 3]</td></tr>
+<tr><td>ILogger.Exiting(LogLeveILogger.Information, 1, typeof(int), 3)</td><td>Exiting: [1, System.Int32, 3]</td></tr>
+<tr><td>ILogger.Exiting()</td><td>Exiting</td></tr>
+<tr><td>ILogger.ExitingSimpleFormat(1, 2, 3)</td><td>Exiting: [1, 2, 3]</td></tr>
+<tr><td>ILogger.ExitingSimpleFormat(LogLeveILogger.Information, 1, 2, 3)</td><td>Exiting: [1, 2, 3]</td></tr>
+<tr><td>ILogger.ExitingSimpleFormat(1, typeof(int), 3)</td><td>Exiting: [1, "System.Int32", 3]</td></tr>
+<tr><td>ILogger.ExitingSimpleFormat(LogLeveILogger.Information, 1, typeof(int), 3)</td><td>Exiting: [1, "System.Int32", 3]</td></tr>
+<tr><td>ILogger.LogInformation("Testing: {@0}, {@1}", new TestType(), "next arg")</td><td>Testing: TestType { TestString: "xyz", TestNumber: "123" }, "next arg"</td></tr>
+<tr><td>ILogger.LogInformation("Testing: {0}, {1}", new TestType(), "next arg")</td><td>Testing: "com.github.akovac35.Logging.Serilog.Tests.TestType", "next arg"</td></tr>
+<tr><td>ILogger.LogInformation("Testing: {@0}", new { Amount = 108, Message = "Hello" })</td><td>Testing: { Amount: 108, Message: "Hello" }</td></tr>
+<tr><td>ILogger.LogInformation("Testing: {0}", new { Amount = 108, Message = "Hello" })</td><td>Testing: "{ Amount = 108, Message = Hello }"</td></tr>
+<tr><td>ILogger.LogInformation("Testing: {@0}", new object[] { new TestType[] { new TestType(), new TestType() } })</td><td>Testing: [TestType { TestString: "xyz", TestNumber: "123" }, TestType { TestString: "xyz", TestNumber: "123" }]</td></tr>
+<tr><td>ILogger.LogInformation("Testing: {0}", new object[] { new TestType[] { new TestType(), new TestType() } })</td><td>Testing: ["com.github.akovac35.Logging.Serilog.Tests.TestType", "com.github.akovac35.Logging.Serilog.Tests.TestType"]</td></tr>
+<tr><td>ATN! ILogger.LogInformation("Testing: {@0}", new TestType[] { new TestType(), new TestType() })</td><td>Testing: TestType { TestString: "xyz", TestNumber: "123" }</td></tr>
+<tr><td>ATN! ILogger.LogInformation("Testing: {0}", new TestType[] { new TestType(), new TestType() })</td><td>Testing: "com.github.akovac35.Logging.Serilog.Tests.TestType"</td></tr>
+</tbody>
+</table>
 
-Action<Microsoft.Extensions.Logging.ILogger> SimpleLogInformationWithAnonType = (l) => l.LogInformation("Testing: {0}", new { Amount = 108, Message = "Hello" });
-yield return new TestCaseData(nameof(SimpleLogInformationWithAnonType), SimpleLogInformationWithAnonType).Returns("Testing: { Amount = 108, Message = Hello }");
-
-Action<Microsoft.Extensions.Logging.ILogger> LogInformationArray = (l) => l.LogInformation("Testing: {@0}", new object[] { new TestType[] { new TestType(), new TestType() } });
-yield return new TestCaseData(nameof(LogInformationArray), LogInformationArray).Returns("Testing: [{\"TestString\":\"xyz\", \"TestNumber\":\"123\"},{\"TestString\":\"xyz\", \"TestNumber\":\"123\"}]");
-
-Action<Microsoft.Extensions.Logging.ILogger> SimpleLogInformationArray = (l) => l.LogInformation("Testing: {0}", new object[] { new TestType[] { new TestType(), new TestType() } });
-yield return new TestCaseData(nameof(SimpleLogInformationArray), SimpleLogInformationArray).Returns("Testing: com.github.akovac35.Logging.NLog.Tests.TestType[]");
-
-// https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
-// Will log only the first array item
-Action<Microsoft.Extensions.Logging.ILogger> LogInformationArrayIncorrect = (l) => l.LogInformation("Testing: {@0}", new TestType[] { new TestType(), new TestType() });
-yield return new TestCaseData(nameof(LogInformationArrayIncorrect), LogInformationArrayIncorrect).Returns("Testing: {\"TestString\":\"xyz\", \"TestNumber\":\"123\"}");
-
-// https://stackoverflow.com/questions/40885239/using-an-array-as-argument-for-string-format
-// Will log only the first array item
-Action<Microsoft.Extensions.Logging.ILogger> SimpleLogInformationArrayIncorrect = (l) => l.LogInformation("Testing: {0}", new TestType[] { new TestType(), new TestType() });
-yield return new TestCaseData(nameof(SimpleLogInformationArrayIncorrect), SimpleLogInformationArrayIncorrect).Returns("Testing: com.github.akovac35.Logging.NLog.Tests.TestType");
-```
-
-In general, when logging arrays, they should either be an explicit ```object[]``` or they should be wrapped: ```l.LogInformation("Testing: {@0}", new object[] { new TestType[] { new TestType(), new TestType() } });```.
+ATN! - will not render as perhaps expected, only the first array element will be rendered. See [Format(String, Object[])](https://docs.microsoft.com/en-us/dotnet/api/system.string.format?view=netcore-3.1#System_String_Format_System_String_System_Object___) for more information.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
