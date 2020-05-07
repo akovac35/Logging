@@ -79,7 +79,7 @@ using static com.github.akovac35.Logging.LoggerHelper<WebApp.Pages.Counter>
 Here(l => l.LogInformation("currentCount: {0}", currentCount));
 ```
 
-It is important to note that instead of using reflection, invocation context is determined with the help of compiler service attributes, which minimizes performance impact. 
+It is important to note that instead of using reflection, invocation context is determined with the help of compiler service attributes, which minimizes performance impact. Benchmarking revealed that invocation overhead of ```_logger.Here(Action<ILogger> logAction)``` versus direct logger method invocation is about 30%, which is negligible.
 
 When this functionality is not disabled, invocation context is passed to logger frameworks via ```ILogger.BeginScope()```, as follows:
 
@@ -202,7 +202,7 @@ public Task<WeatherForecast[]> GetForecastAsync(DateTime startDate)
 }
 ```
 
-Because method entry and exit logging can be quite verbose, the default log level used is ```Trace```. Method overloads are available so this can be changed, which is useful for use in APIs where request and response objects are generally always logged. Benchmarking revealed that invocation overhead of ```_logger.Here(Action<ILogger> logAction)``` versus direct logger method invocation is about 30%, which is negligible. ```ILogger``` extension method ```IsEnteringExitingEnabled``` can be used for testing if method entry and exit logging is enabled - this is useful when preprocessing logger inputs.
+Because method entry and exit logging can be quite verbose, the default log level used is ```Trace```. Method overloads are available so this can be changed, which is useful for use in APIs where request and response objects are generally always logged. ```ILogger``` extension method ```IsEnteringExitingEnabled``` can be used for testing if method entry and exit logging is enabled - this is useful when preprocessing logger inputs.
 
 **Do note that some objects, such as connections and requests, may require a more sophisticated approach than the one indicated here.** This is usualy because logging such objects may trigger an exception for some invoked properties, or it may cause performance problems. Either do not log such objects or use wrappers and only expose safe properties.
 
