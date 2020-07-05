@@ -11,25 +11,13 @@ This library contains helpful resources for .NET Core and ASP.NET Core logging u
 
 	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.Testing.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging.Testing/)
 
-* [com.github.akovac35.Logging.AspNetCore](https://www.nuget.org/packages/com.github.akovac35.Logging.AspNetCore/)
-
-	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.AspNetCore.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging.AspNetCore/)
-
-* [com.github.akovac35.Logging.NLog](https://www.nuget.org/packages/com.github.akovac35.Logging.NLog/)
+* [com.github.akovac35.Logging.NLog](https://www.nuget.org/packages/com.github.akovac35.Logging.NLog/) - just helper methods
 
 	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.NLog.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging.NLog/)
 
-* [com.github.akovac35.Logging.NLog.AspNetCore](https://www.nuget.org/packages/com.github.akovac35.Logging.NLog.AspNetCore/)
-
-	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.NLog.AspNetCore.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging.NLog.AspNetCore/)
-
-* [com.github.akovac35.Logging.Serilog](https://www.nuget.org/packages/com.github.akovac35.Logging.Serilog/)
+* [com.github.akovac35.Logging.Serilog](https://www.nuget.org/packages/com.github.akovac35.Logging.Serilog/) - just helper methods
 
 	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.Serilog.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging.Serilog/)
-
-* [com.github.akovac35.Logging.Serilog.AspNetCore](https://www.nuget.org/packages/com.github.akovac35.Logging.Serilog.AspNetCore/)
-
-	[![NuGet Version](http://img.shields.io/nuget/v/com.github.akovac35.Logging.Serilog.AspNetCore.svg?style=flat)](https://www.nuget.org/packages/com.github.akovac35.Logging.Serilog.AspNetCore/)
 
 ## Status
 
@@ -147,9 +135,9 @@ namespace ConsoleApp
 }
 ```
 
-**Do note that the ```LoggerFactoryProvider.LoggerFactory``` must be defined immediately when application is started but also updated when the logger framework is fully initialized**, to account for any changes during the initialization process (specifically for ASP.NET Core). Failing to do so will cause ```NullLoggerFactory``` to provide logger instances, which do not perform logging.
+**Do note that the ```LoggerFactoryProvider.LoggerFactory``` must be defined immediately when application is started**. Failing to do so will cause ```NullLoggerFactory``` to provide logger instances, which do not perform logging. Update the ```LoggerFactoryProvider.LoggerFactory``` reference if logger factory changes during application lifetime.
 
-```LoggerHelper<T>``` should never be used inside static constructors, because ```LoggerFactoryProvider.LoggerFactory``` is not yet ready, or its reference used to initialize variables (reference will be stale when ```LoggerFactoryProvider.LoggerFactory``` changes).
+```LoggerHelper<T>``` should never be used inside static constructors because ```LoggerFactoryProvider.LoggerFactory``` may not yet be ready, or its reference used to initialize variables (reference will be stale when ```LoggerFactoryProvider.LoggerFactory``` changes).
 
 ### Method entry and exit logging
 
@@ -214,6 +202,7 @@ Console applications can achieve correlation easily with logger scopes:
 
 ```cs
 using Microsoft.Extensions.Logging;
+using com.github.akovac35.Logging.Correlation
 
 using (Logger.BeginScope(new[] { new KeyValuePair<string, object>(Constants.CorrelationId, 12345678) }))
 {
@@ -228,92 +217,60 @@ using (Logger.BeginScope(new[] { new KeyValuePair<string, object>(Constants.Corr
 }
 ```
 
-This library provides the ```ICorrelationProvider``` service to achieve correlation in ASP.NET Core applications - usually it should be scoped:
-
-```cs
-using com.github.akovac35.Logging.AspNetCore;
-using com.github.akovac35.Logging.Correlation;
-
-services.AddHttpContextAccessor();
-services.AddScoped<ICorrelationProvider, CorrelationProvider>();
-services.AddScoped<WeatherForecastService>(fact =>
-{
-    ICorrelationProvider correlationProvider = (new HttpContextAccessor()).GetCorrelationProvider();
-    return new WeatherForecastService(correlationProvider);
-});
-```
-
-A relevant scope instance must exist for the ```ICorrelationProvider``` to be available via the ```HttpContextAccessor```. If it is not available, use direct logger scopes instead. Do note that Controller scope is per request while Blazor Server circuit scope is per user; this is explained in [ASP.NET Core Blazor dependency injection](https://docs.microsoft.com/en-us/aspnet/core/blazor/dependency-injection?view=aspnetcore-3.1#service-lifetime) document.
-
-For Razor pages, correlation can be retrieved with an instance of the ```HttpContextAccessor``` as follows:
-
-```razor
-@page "/counter"
-
-@using Microsoft.Extensions.Logging
-@using Microsoft.AspNetCore.Http
-@using global::com.github.akovac35.Logging.AspNetCore
-@using global::com.github.akovac35.Logging
-@using global::Shared.Mocks
-
-@inject IHttpContextAccessor hc
-@inject ILogger<WebApp.Pages.Counter> logger
-
-<h1>Counter</h1>
-
-<p>Correlation id:  @hc.GetCorrelationId()</p>
-
-<p>Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
-@code {
-    private int currentCount = 0;
-
-    private async Task IncrementCount()
-    {
-        logger.Here(l => l.Entering());
-
-        currentCount++;
-        logger.Here(l => l.LogInformation("currentCount: {0}", currentCount));
-
-        // Business logic call sample
-        var blMock = new BusinessLogicMock<object>();
-        await blMock.FirstLevelAsync(500);
-
-        logger.Here(l => l.Exiting());
-    }
-}
-```
-
-Similarly for Controllers:
-
-```cs
-using com.github.akovac35.Logging.AspNetCore;
-using com.github.akovac35.Logging.Correlation;
-
-protected IHttpContextAccessor _contextAccessor = new HttpContextAccessor();
-
-[HttpGet]
-public async Task<WeatherForecast[]> Get()
-{
-    _logger.Here(l => l.Entering());
-
-    var forecasts = await _forecastService.GetForecastAsync(DateTime.Now);
-    _logger.Here(l => l.LogInformation("CorrelationId for a request instance can be obtained with HttpContextAccessor: {@0}", _contextAccessor.GetCorrelationId()));
-
-    _logger.Here(l => l.Exiting(forecasts));
-    return forecasts;
-}
-```
-
-If used, the ```CorrelationIdMiddleware``` will find and extract the ```x-request-id``` header value and use it for log correlation:
+This library provides dedicated correlation services to achieve correlation in ASP.NET Core applications:
 
 ```cs
 using com.github.akovac35.Logging.AspNetCore.Correlation;
 
-app.UseMiddleware<CorrelationIdMiddleware>();
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddLoggingCorrelation();
+    
+    // ...
+}
+
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    // ...
+    
+    app.UseLoggingCorrelation();
+    
+    // ...   
+}
 ```
+
+Correlation value for the current ambient context can be obtained as follows:
+
+```
+using com.github.akovac35.Logging.Correlation;
+
+CorrelationProvider.CurrentCorrelationProvider?.GetCorrelationId();
+
+```
+
+If enabled, the ```LoggingCorrelationMiddleware``` will find and extract the ```x-request-id``` header value and use it for log correlation:
+
+```cs
+using com.github.akovac35.Logging.AspNetCore.Correlation;
+
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddLoggingCorrelation(correlationIdHeaderName: "x-request-id", obtainCorrelationIdFromRequestHeaders: true);
+    
+    // ...
+}
+
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    // ...
+    
+    app.UseLoggingCorrelation();
+    
+    // ...
+}
+```
+
+Example result:
 
 ```
 curl -i -H "Accept: application/json" -H "Content-Type: application/json" -H "x-request-id: 12345678" -k https://localhost:5001/weatherforecast
@@ -340,63 +297,65 @@ curl -i -H "Accept: application/json" -H "Content-Type: application/json" -H "x-
 
 ### Unit test logging
 
-Sometimes it is necessary to use test logger implementation. This library contains test versions of relevant logger framework types:
+This library contains test versions of relevant logger framework types:
 
 * ```TestSink```
 * ```TestLogger```
 * ```TestLogger<T>```
 * ```TestLoggerFactory```
-* ```TestLoggerProvider```
-
-```cs
-var sink = new TestSink();
-var logger = new TestLogger("FullTypeName", sink, enabled: true);
-
-logger.Here(l => l.LogInformation(""));
-StackFrame stackFrame = new StackFrame(true);
-
-var context = sink.Scopes.ToArray()[0].Scope as System.Collections.Generic.KeyValuePair<string, object>[];
-
-Assert.IsNotNull(context);
-
-Assert.AreEqual(Constants.CallerMemberName, context[0].Key);
-Assert.AreEqual(MethodInfo.GetCurrentMethod().Name, context[0].Value);
-
-Assert.AreEqual(Constants.CallerLineNumber, context[2].Key);
-Assert.AreEqual(stackFrame.GetFileLineNumber() - 1, context[2].Value);
-```
 
 ```TestLogger``` is quite useful for testing - test code should always have loggers fully enabled to verify logging does not introduce problems we are not aware of:
 
 ```cs
 using com.github.akovac35.Logging.Testing;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using Shared.Mocks;
+using System;
 
-namespace com.github.akovac35.AdapterInterceptor.Tests
+namespace TestApp
 {
-    public static class TestHelper
+    [TestFixture]
+    public class TestLoggingExamples
     {
-        public static ILoggerFactory LoggerFactory
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
         {
-            get
-            {
-                var sink = new TestSink();
-                sink.MessageLogged += Sink_MessageLogged;
-                return new TestLoggerFactory(sink, true);
-            }
+            customOnWrite = writeContext => {
+                Console.WriteLine(writeContext);
+            };
+
+            customOnBeginScope = scopeContext => {
+                Console.WriteLine(scopeContext);
+            };
+
+            serviceCollection = new ServiceCollection();
+            serviceCollection.AddTransient(typeof(BusinessLogicMock<>));
+            
+            // Register TestLogger using extension method
+            serviceCollection.AddTestLogger(onWrite: customOnWrite, onBeginScope: customOnBeginScope);
         }
 
-        private static void Sink_MessageLogged(WriteContext obj)
+        private IServiceCollection serviceCollection;
+
+        private Action<WriteContext> customOnWrite;
+        private Action<ScopeContext> customOnBeginScope;
+
+        [Test]
+        public void Test_WithLoggingToTestConsole_Works()
         {
-            KeyValuePair<string, object>[] loggerScope = obj.Scope as KeyValuePair<string, object>[];
-            TestContext.WriteLine($"[{DateTime.Now.ToLongTimeString()}] {obj.LogLevel.ToString()} <{obj.LoggerName}:{loggerScope?[0].Value}:{loggerScope?[2].Value}> {(obj.Exception != null ? obj.Exception.Message : obj.Message)}");
+            // The service provider should be defined on per-test level or logger writes will accumulate and may result in OOM - clean them with testSink.Clear()
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var blm = serviceProvider.GetRequiredService<BusinessLogicMock<object>>();
+            blm.FirstLevel();
+
+            var testSink = serviceProvider.GetRequiredService<ITestSink>();
+
+            Assert.IsTrue(testSink.Writes.Count > 0);
+            Assert.IsTrue(testSink.Scopes.Count > 0);
         }
     }
 }
-
-// ...
-// var myInstance = new InstanceOfX(TestHelper.LoggerFactory);
 ```
 
 ![this](Resources/test_logging.jpg)
@@ -404,9 +363,8 @@ namespace com.github.akovac35.AdapterInterceptor.Tests
 
 ### Logger framework specifics
 
-* Logger framework configuration helpers for Serilog and NLog,
-* Serilog enricher and NLog layout renderer utilizing ```CorrelationProvider```,
-* Serilog configuration monitor for settings file updates. 
+* Logger framework configuration helpers for Serilog and NLog (optional),
+* Serilog configuration monitor for settings file updates (optional). 
 
 ### Message template examples
 
@@ -456,6 +414,11 @@ Rendering examples for Serilog are provided below:
 </table>
 
 ATN! - will not render as perhaps expected, only the first array element will be rendered. See [Format(String, Object[])](https://docs.microsoft.com/en-us/dotnet/api/system.string.format?view=netcore-3.1#System_String_Format_System_String_System_Object___) for more information.
+
+## Release history
+
+* 1.0.5 - Production ready, using ```HttpContext``` for log correlation.
+* 1.1.0 - Not using ```HttpContext``` for log correlation anymore - use ```CorrelationProvider.CurrentCorrelationProvider?.GetCorrelationId()``` to obtain the correlation value for the current ambient context. Made it easier to wire up logging services by introducing the ```AddLoggingCorrelation```, ```UseLoggingCorrelation``` and ```AddTestLogger``` extension methods. The ```CorrelationIdMiddleware``` was renamed to ```LoggingCorrelationMiddleware```. Updated dependencies. Removed ASP.NET Core projects containing NLog and Serilog helper code because it is no longer needed. Switched to using abstractions as much as possible.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

@@ -10,15 +10,16 @@ namespace com.github.akovac35.Logging.Correlation
 {
     public class Correlation
     {
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         public Correlation()
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         {
             GenerateNewId();
         }
 
         public Correlation(string id)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-            _id = id;
+            _id = id ?? throw new ArgumentNullException(nameof(id));
         }
 
         protected volatile string _id;
@@ -31,8 +32,7 @@ namespace com.github.akovac35.Logging.Correlation
             }
             set
             {
-                if (value == null) throw new ArgumentNullException(nameof(Id));
-                _id = value;
+                _id = value ?? throw new ArgumentNullException(nameof(Id));
             }
         }
 

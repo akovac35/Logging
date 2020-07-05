@@ -24,7 +24,7 @@ namespace com.github.akovac35.Logging
                 // Reset logger if logger factory which created it is no longer current. We don't care for thread safety
                 // because when steady state is reached, everything should be consistent
                 ILoggerFactory lfCurrent = LoggerFactoryProvider.LoggerFactory;
-                ILoggerFactory lf = null;
+                ILoggerFactory? lf;
                 _loggerFactoryWhichCreatedLogger.TryGetTarget(out lf);
                 if (lf != lfCurrent || _logger == null)
                 {
@@ -36,16 +36,13 @@ namespace com.github.akovac35.Logging
             }
             set
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                _logger = value;
+                _logger = value ?? throw new ArgumentNullException(nameof(Logger));
             }
         }
 
-        private static object _getLoggerLock = new object();
+        private static volatile ILogger? _logger;
 
-        private static volatile ILogger _logger;
-
-        private static WeakReference<ILoggerFactory> _loggerFactoryWhichCreatedLogger = new WeakReference<ILoggerFactory>(null);
+        private static WeakReference<ILoggerFactory?> _loggerFactoryWhichCreatedLogger = new WeakReference<ILoggerFactory?>(null);
 
         public static void Here(Action<ILogger> logAction, [CallerMemberName] string callerMemberName = "unknown", [CallerFilePath] string callerFilePath = "unknown", [CallerLineNumber] int callerLineNumber = -1)
         {

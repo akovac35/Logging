@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <Description>Helpful resources for .NET Core and ASP.NET Core logging using various logger frameworks and Microsoft.Extensions.Logging.ILogger interface.</Description>
-    <VersionPrefix>1.0.8</VersionPrefix>
+    <VersionPrefix>1.1.0</VersionPrefix>
     <Authors>Aleksander Kovač</Authors>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
-    <PackageTags>logging;serilog;nlog</PackageTags>
+    <PackageTags>logging;serilog;nlog;correlation</PackageTags>
     <RepositoryUrl>https://github.com/akovac35/Logging</RepositoryUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <IncludeSymbols>true</IncludeSymbols>
@@ -13,12 +13,18 @@
     <PackageIcon>.NET_Core_Logo.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>Updated Logging version.</PackageReleaseNotes>
+
+    <LangVersion>latest</LangVersion>
+
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.5" />
+    <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
 
-    <None Include="../../Resources/.NET_Core_Logo.png" Pack="true" PackagePath=""/>
+    <None Include="../../Resources/.NET_Core_Logo.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>

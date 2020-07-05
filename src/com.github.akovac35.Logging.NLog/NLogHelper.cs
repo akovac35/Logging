@@ -25,7 +25,7 @@ namespace com.github.akovac35.Logging.NLog
             global::NLog.LogManager.Shutdown();
         }
 
-        public static Microsoft.Extensions.Logging.ILoggerFactory CreateLoggerFactory(NLogProviderOptions options = null)
+        public static Microsoft.Extensions.Logging.ILoggerFactory CreateLoggerFactory(NLogProviderOptions? options = null)
         {
             return new NLogLoggerFactory(options ?? new NLogProviderOptions());
         }

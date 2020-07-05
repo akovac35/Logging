@@ -29,11 +29,11 @@ namespace com.github.akovac35.Logging.Tests
         public void Here_LoggerScope_Exists()
         {
             var sink = new TestSink();
-            LoggerFactoryProvider.LoggerFactory = new TestLoggerFactory(sink, true);
+            LoggerFactoryProvider.LoggerFactory = new TestLoggerFactory(sink);
             LoggerHelper<LoggerHelperTest>.Here(l => l.LogInformation(""));
             StackFrame stackFrame = new StackFrame(true);
 
-            var context = sink.Scopes.ToArray()[0].Scope as System.Collections.Generic.KeyValuePair<string, object>[];
+            var context = sink.Scopes.ToArray()[0].State as System.Collections.Generic.KeyValuePair<string, object>[];
 
             Assert.IsNotNull(context);
 
@@ -48,7 +48,7 @@ namespace com.github.akovac35.Logging.Tests
         public void Logger_Getter_Works()
         {
             var sink = new TestSink();
-            LoggerFactoryProvider.LoggerFactory = new TestLoggerFactory(sink, true);
+            LoggerFactoryProvider.LoggerFactory = new TestLoggerFactory(sink);
 
             // Just confirm that static fields of a generic static class are not shared between constructed types
             Assert.IsInstanceOf<ILogger<A>>(LoggerHelper<A>.Logger);

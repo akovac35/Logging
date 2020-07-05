@@ -5,11 +5,29 @@
 //   Aleksander Kovač
 
 using System;
+using System.Threading;
 
 namespace com.github.akovac35.Logging.Correlation
 {
     public class CorrelationProvider : ICorrelationProvider
     {
+        private static AsyncLocal<ICorrelationProvider?> _currentCorrelationProvider = new AsyncLocal<ICorrelationProvider?>();
+
+        /// <summary>
+        /// Accesses the ambient (AsyncLocal) ICorrelationProvider.
+        /// </summary>
+        public static ICorrelationProvider? CurrentCorrelationProvider
+        {
+            get
+            {
+                return _currentCorrelationProvider.Value;
+            }
+            set
+            {
+                _currentCorrelationProvider.Value = value;
+            }
+        }
+
         public CorrelationProvider()
         {
             Value = new Correlation();
@@ -17,8 +35,7 @@ namespace com.github.akovac35.Logging.Correlation
 
         public CorrelationProvider(Correlation correlation)
         {
-            if (correlation == null) throw new ArgumentNullException(nameof(correlation));
-            Value = correlation;
+            Value = correlation ?? throw new ArgumentNullException(nameof(correlation));
         }
 
         public Correlation Value { get; protected set; }
@@ -30,7 +47,7 @@ namespace com.github.akovac35.Logging.Correlation
 
         public void SetCorrelationId(string id)
         {
-            Value.Id = id;
+            Value.Id = id ?? throw new ArgumentNullException(nameof(id));
         }
     }
 }

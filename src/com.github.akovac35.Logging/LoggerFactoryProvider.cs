@@ -12,7 +12,9 @@ namespace com.github.akovac35.Logging
 {
     public static class LoggerFactoryProvider
     {
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         static LoggerFactoryProvider()
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         {
             SetDefaultLoggerFactory();
         }
@@ -27,14 +29,13 @@ namespace com.github.akovac35.Logging
             }
             set
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                _loggerFactory = value;
+                _loggerFactory = value ?? throw new ArgumentNullException(nameof(LoggerFactory));
             }
         }
 
         public static void SetDefaultLoggerFactory()
         {
-            _loggerFactory = new NullLoggerFactory();
+            _loggerFactory = NullLoggerFactory.Instance;
         }
     }
 }

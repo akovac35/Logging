@@ -7,77 +7,75 @@
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
 
 namespace com.github.akovac35.Logging.Testing
 {
     public class TestLogger : ILogger
     {
-        private object _scope;
-
-        private readonly ITestSink _sink;
-
-        private readonly string _name;
-
-        private readonly Func<LogLevel, bool> _filter;
-
-        public TestLogger(string name, ITestSink sink, bool enabled)
-            : this(name, sink, _ => enabled)
+        public TestLogger(string name, ITestSink sink)
+            : this(name, sink, _ => true)
         {
         }
 
         public TestLogger(string name, ITestSink sink, Func<LogLevel, bool> filter)
         {
-            _sink = sink;
-            _name = name;
-            _filter = filter;
+            _sink = sink ?? throw new ArgumentNullException(nameof(sink));
+            _name = name ?? throw new ArgumentNullException(nameof(name));
+            _filter = filter ?? throw new ArgumentNullException(nameof(filter));
         }
 
-        public string Name { get; set; }
+        public virtual string Name { get; protected set; }
 
-        public IDisposable BeginScope<TState>(TState state)
+        protected ITestSink _sink;
+
+        protected string _name;
+
+        protected Func<LogLevel, bool> _filter;
+
+        public virtual IDisposable BeginScope<TState>(TState state)
         {
-            _scope = state;
+            var ctx = NewScopeContext();
+            ctx.Logger = this;
+            ctx.State = state;
 
-            _sink.Begin(new BeginScopeContext()
-            {
-                LoggerName = _name,
-                Scope = state,
-            });
-
-            return TestDisposable.Instance;
+            _sink.Begin(ctx);
+            return ctx;
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             if (!IsEnabled(logLevel))
             {
                 return;
             }
 
-            _sink.Write(new WriteContext()
-            {
-                LogLevel = logLevel,
-                EventId = eventId,
-                State = state,
-                Exception = exception,
-                Formatter = (s, e) => formatter((TState)s, e),
-                LoggerName = _name,
-                Scope = _scope
-            });
+            var ctx = NewWriteContext();
+            ctx.LogLevel = logLevel;
+            ctx.EventId = eventId;
+            ctx.State = state;
+            ctx.Exception = exception;
+            ctx.Formatter = (s, e) => formatter((TState)s, e);
+            ctx.Logger = this;
+            ctx.Timestamp = DateTime.Now;
+            ctx.ThreadId = Thread.CurrentThread.ManagedThreadId;
+
+            _sink.Write(ctx);
         }
 
-        public bool IsEnabled(LogLevel logLevel)
+        public virtual bool IsEnabled(LogLevel logLevel)
         {
             return logLevel != LogLevel.None && _filter(logLevel);
         }
 
-        private class TestDisposable : IDisposable
+        protected virtual WriteContext NewWriteContext()
         {
-            public static readonly TestDisposable Instance = new TestDisposable();
+            return new WriteContext();
+        }
 
-            public void Dispose()
-            {
-            }
+        protected virtual ScopeContext NewScopeContext()
+        {
+            return new ScopeContext();
         }
     }
 }

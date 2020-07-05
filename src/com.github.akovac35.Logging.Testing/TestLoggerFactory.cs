@@ -6,31 +6,34 @@
 //   Microsoft
 
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace com.github.akovac35.Logging.Testing
 {
     public class TestLoggerFactory : ILoggerFactory
     {
-        private readonly ITestSink _sink;
+        protected ITestSink _sink;
 
-        private readonly bool _enabled;
-
-        public TestLoggerFactory(ITestSink sink, bool enabled)
+        public TestLoggerFactory(ITestSink sink)
         {
-            _sink = sink;
-            _enabled = enabled;
+            _sink = sink ?? throw new ArgumentNullException(nameof(sink));
         }
 
-        public ILogger CreateLogger(string name)
+        public virtual ILogger CreateLogger(string name)
         {
-            return new TestLogger(name, _sink, _enabled);
+            return NewLogger(name ?? throw new ArgumentNullException(nameof(name)));
         }
 
-        public void AddProvider(ILoggerProvider provider)
+        protected virtual ILogger NewLogger(string name)
+        {
+            return new TestLogger(name, _sink);
+        }
+
+        public virtual void AddProvider(ILoggerProvider provider)
         {
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
         }
     }

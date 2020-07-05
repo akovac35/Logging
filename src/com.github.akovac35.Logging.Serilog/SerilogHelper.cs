@@ -81,6 +81,6 @@ namespace com.github.akovac35.Logging.Serilog
             return new SerilogLoggerFactory();
         }
 
-        private static IDisposable _changeCallback;
+        private static IDisposable? _changeCallback;
     }
 }

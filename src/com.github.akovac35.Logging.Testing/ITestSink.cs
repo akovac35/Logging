@@ -14,18 +14,22 @@ namespace com.github.akovac35.Logging.Testing
     {
         event Action<WriteContext> MessageLogged;
 
-        event Action<BeginScopeContext> ScopeStarted;
+        event Action<ScopeContext> ScopeStarted;
 
         Func<WriteContext, bool> WriteEnabled { get; set; }
 
-        Func<BeginScopeContext, bool> BeginEnabled { get; set; }
+        Func<ScopeContext, bool> BeginEnabled { get; set; }
 
-        IProducerConsumerCollection<BeginScopeContext> Scopes { get; set; }
+        ConcurrentBag<ScopeContext> Scopes { get; }
 
-        IProducerConsumerCollection<WriteContext> Writes { get; set; }
+        ConcurrentBag<WriteContext> Writes { get; }
 
         void Write(WriteContext context);
 
-        void Begin(BeginScopeContext context);
+        void Begin(ScopeContext context);
+
+        void Clear();
+
+        ScopeContext CurrentScope { get; set; }
     }
 }

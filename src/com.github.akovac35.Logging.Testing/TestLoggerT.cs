@@ -10,26 +10,26 @@ using System;
 
 namespace com.github.akovac35.Logging.Testing
 {
-    public class TestLogger<T> : ILogger
+    public class TestLogger<T> : ILogger<T>
     {
-        private readonly ILogger _logger;
+        protected ILogger _logger;
 
         public TestLogger(TestLoggerFactory factory)
         {
-            _logger = factory.CreateLogger<T>();
+            _logger = (factory ?? throw new ArgumentNullException(nameof(factory))).CreateLogger<T>();
         }
 
-        public IDisposable BeginScope<TState>(TState state)
+        public virtual IDisposable BeginScope<TState>(TState state)
         {
             return _logger.BeginScope(state);
         }
 
-        public bool IsEnabled(LogLevel logLevel)
+        public virtual bool IsEnabled(LogLevel logLevel)
         {
             return _logger.IsEnabled(logLevel);
         }
 
-        public void Log<TState>(
+        public virtual void Log<TState>(
             LogLevel logLevel,
             EventId eventId,
             TState state,

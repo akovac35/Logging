@@ -7,54 +7,97 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Threading;
 
 namespace com.github.akovac35.Logging.Testing
 {
-    public class TestSink : ITestSink
+    public class TestSink : ITestSink, IDisposable
     {
-        private ConcurrentQueue<BeginScopeContext> _scopes;
+        // current, parent
+        protected ConcurrentBag<ScopeContext> _scopes;
 
-        private ConcurrentQueue<WriteContext> _writes;
+        protected ConcurrentBag<WriteContext> _writes;
 
         public TestSink(
             Func<WriteContext, bool> writeEnabled = null,
-            Func<BeginScopeContext, bool> beginEnabled = null)
+            Func<ScopeContext, bool> beginEnabled = null)
         {
             WriteEnabled = writeEnabled;
             BeginEnabled = beginEnabled;
 
-            _scopes = new ConcurrentQueue<BeginScopeContext>();
-            _writes = new ConcurrentQueue<WriteContext>();
+            _scopes = new ConcurrentBag<ScopeContext>();
+            _writes = new ConcurrentBag<WriteContext>();
         }
 
-        public Func<WriteContext, bool> WriteEnabled { get; set; }
+        public virtual Func<WriteContext, bool> WriteEnabled { get; set; }
 
-        public Func<BeginScopeContext, bool> BeginEnabled { get; set; }
+        public virtual Func<ScopeContext, bool> BeginEnabled { get; set; }
 
-        public IProducerConsumerCollection<BeginScopeContext> Scopes { get => _scopes; set => _scopes = new ConcurrentQueue<BeginScopeContext>(value); }
+        public virtual ConcurrentBag<ScopeContext> Scopes { get => _scopes; }
 
-        public IProducerConsumerCollection<WriteContext> Writes { get => _writes; set => _writes = new ConcurrentQueue<WriteContext>(value); }
+        public virtual ConcurrentBag<WriteContext> Writes { get => _writes;  }
+
+        protected AsyncLocal<ScopeContext> _currentScope = new AsyncLocal<ScopeContext>();
+        public virtual ScopeContext CurrentScope 
+        {
+            get
+            {
+                return _currentScope.Value;
+            }
+            set
+            {
+                _currentScope.Value = value;
+            }
+        }
 
         public event Action<WriteContext> MessageLogged;
 
-        public event Action<BeginScopeContext> ScopeStarted;
+        public event Action<ScopeContext> ScopeStarted;
 
-        public void Write(WriteContext context)
+        public virtual void Write(WriteContext context)
         {
             if (WriteEnabled == null || WriteEnabled(context))
             {
-                _writes.Enqueue(context);
+                context.Scope = CurrentScope;
+                _writes.Add(context);
+                MessageLogged?.Invoke(context);
             }
-            MessageLogged?.Invoke(context);
         }
 
-        public void Begin(BeginScopeContext context)
+        public virtual void Begin(ScopeContext context)
         {
             if (BeginEnabled == null || BeginEnabled(context))
             {
-                _scopes.Enqueue(context);
+                context.ParentScope = CurrentScope;
+                context.Sink = this;
+                CurrentScope = context;
+                _scopes.Add(context);
+                ScopeStarted?.Invoke(context);
             }
-            ScopeStarted?.Invoke(context);
+        }
+
+        public virtual void Clear()
+        {
+            foreach (var item in _scopes)
+            {
+                // Avoid post-clear modification of this sink
+                item?.Dispose();
+            }
+            
+            _scopes.Clear();
+            _writes.Clear();
+        }
+
+        private bool _disposedValue;
+
+        public virtual void Dispose()
+        {
+            if (!_disposedValue)
+            {
+                Clear();
+
+                _disposedValue = true;
+            }
         }
     }
 }

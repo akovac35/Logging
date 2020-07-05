@@ -114,7 +114,7 @@ namespace com.github.akovac35.Logging.Tests
         public string LoggerMessage_IsCorrect(string name, Action<Microsoft.Extensions.Logging.ILogger> logAction)
         {
             var sink = new TestSink();
-            var logger = new TestLogger("", sink, enabled: true);
+            var logger = new TestLogger("", sink);
 
             logger.Here(logAction);
 

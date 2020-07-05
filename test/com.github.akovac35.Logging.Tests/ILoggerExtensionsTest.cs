@@ -7,8 +7,6 @@
 using com.github.akovac35.Logging.Testing;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -31,12 +29,12 @@ namespace com.github.akovac35.Logging.Tests
         public void Here_LoggerScope_Exists()
         {
             var sink = new TestSink();
-            var logger = new TestLogger("", sink, enabled: true);
+            var logger = new TestLogger("", sink);
 
             logger.Here(l => l.LogInformation(""));
             StackFrame stackFrame = new StackFrame(true);
 
-            var context = sink.Scopes.ToArray()[0].Scope as System.Collections.Generic.KeyValuePair<string, object>[];
+            var context = sink.Scopes.ToArray()[0].State as System.Collections.Generic.KeyValuePair<string, object>[];
 
             Assert.IsNotNull(context);
 

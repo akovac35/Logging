@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-    <PackageReference Include="Moq" Version="4.14.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.5" />
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">
       <PrivateAssets>all</PrivateAssets>
@@ -18,7 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\com.github.akovac35.Logging.AspNetCore\com.github.akovac35.Logging.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\com.github.akovac35.Logging.Testing\com.github.akovac35.Logging.Testing.csproj" />
+    <ProjectReference Include="..\..\src\com.github.akovac35.Logging\com.github.akovac35.Logging.csproj" />
   </ItemGroup>
 
 </Project>

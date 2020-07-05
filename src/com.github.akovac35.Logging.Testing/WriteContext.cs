@@ -10,6 +10,7 @@ using System;
 
 namespace com.github.akovac35.Logging.Testing
 {
+    [System.Diagnostics.DebuggerDisplay("{ToString()}")]
     public class WriteContext
     {
         public LogLevel LogLevel { get; set; }
@@ -22,16 +23,25 @@ namespace com.github.akovac35.Logging.Testing
 
         public Func<object, Exception, string> Formatter { get; set; }
 
-        public object Scope { get; set; }
+        public ScopeContext Scope { get; set; }
 
-        public string LoggerName { get; set; }
+        public ILogger Logger { get; set; }
 
-        public string Message
+        public DateTime Timestamp { get; set; }
+
+        public int ThreadId { get; set; }
+
+        public virtual string Message
         {
             get
             {
                 return Formatter(State, Exception);
             }
+        }
+
+        public override string ToString()
+        {
+            return $"[{Timestamp:yyyy-MM-dd HH:mm:ss.fff}] {ThreadId} {LogLevel} EventId: {EventId}{(Scope != null ? $" Scope: <{Scope}>" : "")} Message: {Message}{(Exception != null ? $"{Environment.NewLine}{Exception}" : "")}";
         }
     }
 }
