@@ -56,6 +56,7 @@ using com.github.akovac35.Logging;
 using Microsoft.Extensions.Logging;
 using System;
 
+// Import LoggerHelper<T> properties
 using static com.github.akovac35.Logging.LoggerHelper<ConsoleApp.Program>;
 
 namespace ConsoleApp
