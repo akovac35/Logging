@@ -33,12 +33,12 @@ Advanced samples utilizing library functionality are provided here: [Logging.Sam
   - [Status](#status)
   - [Samples](#samples)
   - [Contents](#contents)
-    - [Invocation context logging](#invocation-context-logging)
     - [Logger helper](#logger-helper)
+    - [Invocation context logging](#invocation-context-logging)
     - [Method entry and exit logging](#method-entry-and-exit-logging)
     - [Log correlation](#log-correlation)
     - [Unit test logging](#unit-test-logging)
-    - [Logger framework specifics](#logger-framework-specifics)
+    - [3rd party logger frameworks helper methods](#3rd-party-logger-frameworks-helper-methods)
     - [Message template examples](#message-template-examples)
   - [Contributing](#contributing)
   - [License](#license)
@@ -46,6 +46,55 @@ Advanced samples utilizing library functionality are provided here: [Logging.Sam
 Logging is an important aspect of any application framework. Compared to Java logging, configuring .NET Core and ASP.NET Core applications for logging seems trivial at first, until we encounter framework specifics related to async code execution that make it impossible to correlate log entries based on the thread id - async methods may switch threads during different stages of the execution, so it is not possible to distinguish which log entry belongs to a specific activity without some sort of log entry correlation being provided with each log entry. This logging library provides means with which it is possible to correlate application activity and log entries, and more.
 
 The following functionality **is provided for Microsoft.Extensions.Logging**:
+
+### Logger helper
+
+This library provides a static generic helper class ```LoggerHelper<T>``` using which it is possible to log application startup events or perform limited logging inside types without having to inject a logger instance:
+
+```cs
+using com.github.akovac35.Logging;
+using Microsoft.Extensions.Logging;
+using System;
+
+using static com.github.akovac35.Logging.LoggerHelper<ConsoleApp.Program>;
+
+namespace ConsoleApp
+{
+    public class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            // Configure logger framework at application startup first and then
+            // define a logger factory for this library to use:
+            // ... logger framework initialization sufficient for logging application startup events ...
+            LoggerFactoryProvider.LoggerFactory = new XYZLoggerFactory(); // SerilogLoggerFactory, NLogLoggerFactory, ...
+            
+	    // "Logger" property is imported with the "using static" directive and is provided by the LoggerHelper<T>
+            Logger.Entering(args);
+
+            try
+            {
+                // Perform work here
+
+                Logger.Exiting(args);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                throw ex;
+            }
+            finally
+            {
+                // Dispose logger framework
+            }
+        }
+    }
+}
+```
+
+**Do note that the ```LoggerFactoryProvider.LoggerFactory``` must be defined immediately when application is started**. Failing to do so will cause ```NullLoggerFactory``` to provide logger instances, which do not perform logging. Update the ```LoggerFactoryProvider.LoggerFactory``` reference if logger factory changes during application lifetime.
+
+```LoggerHelper<T>``` should never be used inside static constructors because ```LoggerFactoryProvider.LoggerFactory``` may not yet be ready, or its reference used to initialize variables (reference will be stale when ```LoggerFactoryProvider.LoggerFactory``` changes).
 
 ### Invocation context logging
 
@@ -90,54 +139,6 @@ using (logger.BeginScope(
 ```
 
 Invocation context capture can be disabled by setting ```LoggerLibraryConfiguration.ShouldHerePassInvocationContextToLoggerScope = false```.
-
-### Logger helper
-
-This library provides a static generic helper class ```LoggerHelper<T>``` using which it is possible to log application startup events or perform limited logging inside types without having to inject a logger instance:
-
-```cs
-using com.github.akovac35.Logging;
-using Microsoft.Extensions.Logging;
-using System;
-
-using static com.github.akovac35.Logging.LoggerHelper<ConsoleApp.Program>;
-
-namespace ConsoleApp
-{
-    public class Program
-    {
-        public static async Task Main(string[] args)
-        {
-            // Configure logger framework at application startup first and then
-            // define a logger factory for this library to use:
-            // ... logger framework initialization sufficient for logging application startup events ...
-            LoggerFactoryProvider.LoggerFactory = new XYZLoggerFactory(); // SerilogLoggerFactory, NLogLoggerFactory, ...
-
-            Logger.Entering(args);
-
-            try
-            {
-                // Perform work here
-
-                Logger.Exiting(args);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, ex.Message);
-                throw ex;
-            }
-            finally
-            {
-                // Dispose logger framework
-            }
-        }
-    }
-}
-```
-
-**Do note that the ```LoggerFactoryProvider.LoggerFactory``` must be defined immediately when application is started**. Failing to do so will cause ```NullLoggerFactory``` to provide logger instances, which do not perform logging. Update the ```LoggerFactoryProvider.LoggerFactory``` reference if logger factory changes during application lifetime.
-
-```LoggerHelper<T>``` should never be used inside static constructors because ```LoggerFactoryProvider.LoggerFactory``` may not yet be ready, or its reference used to initialize variables (reference will be stale when ```LoggerFactoryProvider.LoggerFactory``` changes).
 
 ### Method entry and exit logging
 
@@ -204,7 +205,7 @@ Console applications can achieve correlation easily with logger scopes:
 using Microsoft.Extensions.Logging;
 using com.github.akovac35.Logging.Correlation
 
-using (Logger.BeginScope(new[] { new KeyValuePair<string, object>(Constants.CorrelationId, 12345678) }))
+using (_logger.BeginScope(new[] { new KeyValuePair<string, object>(Constants.CorrelationId, 12345678) }))
 {
     List<Task<int>> tasks = new List<Task<int>>();
     for (int i = 0; i < 10; i++)
@@ -241,7 +242,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 
 Correlation value for the current ambient context can be obtained as follows:
 
-```
+```cs
 using com.github.akovac35.Logging.Correlation;
 
 CorrelationProvider.CurrentCorrelationProvider?.GetCorrelationId();
@@ -361,10 +362,34 @@ namespace TestApp
 ![this](Resources/test_logging.jpg)
 
 
-### Logger framework specifics
+### 3rd party logger frameworks helper methods
 
-* Logger framework configuration helpers for Serilog and NLog (optional),
-* Serilog configuration monitor for settings file updates (optional). 
+* Logger framework configuration helpers for Serilog and NLog,
+* Serilog configuration monitor for settings file updates.
+
+NLog usage example:
+
+```cs
+using com.github.akovac35.Logging;
+using com.github.akovac35.Logging.NLog;
+
+// File "NLog.config" is in the same folder as the "appsettings.json" file
+NLogHelper.CreateLogger("NLog.config");
+LoggerFactoryProvider.LoggerFactory = NLogHelper.CreateLoggerFactory();
+```
+
+Serilog usage example:
+
+```cs
+using com.github.akovac35.Logging;
+using com.github.akovac35.Logging.Serilog;
+
+// File "serilog.json" is in the same folder as the "appsettings.json" file. Serilog settings file update monitor is realized as an event handler for the "reloadOnChange" event
+SerilogHelper.CreateLogger(configure => configure.AddJsonFile("serilog.json", optional: false, reloadOnChange: true));
+LoggerFactoryProvider.LoggerFactory = SerilogHelper.CreateLoggerFactory();
+```
+
+[Samples](#samples) provide more details.
 
 ### Message template examples
 
