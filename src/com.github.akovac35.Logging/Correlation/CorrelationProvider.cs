@@ -6,7 +6,6 @@
 //   Denis Kavčič
 
 using System;
-using System.Net.Http.Headers;
 using System.Threading;
 
 namespace com.github.akovac35.Logging.Correlation
