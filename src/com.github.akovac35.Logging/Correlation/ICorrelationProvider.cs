@@ -3,12 +3,14 @@
 
 // Authors:
 //   Aleksander Kovač
+//   Denis Kavčič
 
 namespace com.github.akovac35.Logging.Correlation
 {
     public interface ICorrelationProvider
     {
         public Correlation Value { get; }
+        string? HeaderName { get; }
 
         public string GetCorrelationId();
 

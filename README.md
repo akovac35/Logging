@@ -45,6 +45,7 @@ Advanced samples utilizing library functionality are provided here: [Logging.Sam
     - [3rd party logger frameworks helper methods](#3rd-party-logger-frameworks-helper-methods)
     - [Message template examples](#message-template-examples)
   - [Contributing](#contributing)
+	- [Contributors](#contributors)
   - [License](#license)
 
 Logging is an important aspect of any application framework. Compared to Java logging, configuring .NET Core and ASP.NET Core applications for logging seems trivial at first, until we encounter framework specifics related to async code execution that make it impossible to correlate log entries based on the thread id - async methods may switch threads during different stages of the execution, so it is not possible to distinguish which log entry belongs to a specific activity without some sort of log entry correlation being provided with each log entry. This logging library provides means with which it is possible to correlate application activity and log entries, and more.
@@ -454,6 +455,9 @@ ATN! - will not render as perhaps expected, only the first array element will be
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
+
+### Contributors
+* [Denis Kavčič](https://github.com/deniskavcic)
 
 ## License
 [Apache-2.0](LICENSE)

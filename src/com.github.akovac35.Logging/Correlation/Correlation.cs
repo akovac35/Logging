@@ -3,6 +3,7 @@
 
 // Authors:
 //   Aleksander Kovač
+//   Denis Kavčič
 
 using System;
 
