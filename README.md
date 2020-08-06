@@ -246,16 +246,35 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 }
 ```
 
-Correlation value for the current ambient context can be obtained as follows:
+Correlation value for the current ambient context can be obtained as follows with dependency injection:
 
-```cs
-using com.github.akovac35.Logging.Correlation;
+```razor
+@using com.github.akovac35.Logging.Correlation 
 
-CorrelationProvider.CurrentCorrelationProvider?.GetCorrelationId();
+@inject CorrelationProviderAccessor CorrelationProviderAccessorInstance
+
+<p>Correlation id:  @CorrelationProviderAccessorInstance.Current?.GetCorrelationId()</p>
 
 ```
 
-If enabled, the ```LoggingCorrelationMiddleware``` will find and extract the ```x-request-id``` header value and use it for log correlation:
+or
+
+```cs
+public WeatherForecastService(CorrelationProviderAccessor correlationProviderAccessor, ILogger<WeatherForecastService> logger = null)
+{
+    if (logger != null) _logger = logger;
+    CorrelationProviderAccessorInstance = correlationProviderAccessor ?? throw new ArgumentNullException(nameof(correlationProviderAccessor));
+}
+
+private ILogger _logger = NullLogger.Instance;
+
+protected CorrelationProviderAccessor CorrelationProviderAccessorInstance { get; set; }
+
+// Use as follows:
+// string? correlationId = CorrelationProviderAccessorInstance.Current?.GetCorrelationId();
+```
+
+If enabled, the ```LoggingCorrelationMiddleware``` will find and extract the ```x-request-id``` header value (case independent) and use it for log correlation:
 
 ```cs
 using com.github.akovac35.Logging.AspNetCore.Correlation;
@@ -450,6 +469,7 @@ ATN! - will not render as perhaps expected, only the first array element will be
 
 * 1.0.5 - Production ready, using ```HttpContext``` for log correlation.
 * 1.1.0 - Not using ```HttpContext``` for log correlation anymore - use ```CorrelationProvider.CurrentCorrelationProvider?.GetCorrelationId()``` to obtain the correlation value for the current ambient context. Made it easier to wire up logging services by introducing the ```AddLoggingCorrelation```, ```UseLoggingCorrelation``` and ```AddTestLogger``` extension methods. The ```CorrelationIdMiddleware``` was renamed to ```LoggingCorrelationMiddleware```. Updated dependencies. Removed ASP.NET Core projects containing NLog and Serilog helper code because it is no longer needed. Switched to using abstractions as much as possible.
+* 1.1.1 - Added CorrelationProviderAccessor.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

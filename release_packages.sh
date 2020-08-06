@@ -6,7 +6,9 @@
 #    <IsPackable>false</IsPackable>
 #  </PropertyGroup>
 #
-# Set the nuget api key first: nuget setApiKey <key> -Source https://api.nuget.org/v3/index.json
+# Set the nuget api key first:
+# nuget setApiKey <key> -Source https://api.nuget.org/v3/index.json
+# nuget setApiKey <key> -Source https://www.nuget.org/api/v2/symbolpackage
 # The key must be configured to permit this, first perform a manual upload of a package 
 # and then edit the key by adding the new package as permitted.
 #
