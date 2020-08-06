@@ -3,8 +3,10 @@
 
 // Authors:
 //   Aleksander Kovač
+//   Denis Kavčič
 
 using System;
+using System.Net.Http.Headers;
 using System.Threading;
 
 namespace com.github.akovac35.Logging.Correlation
@@ -38,7 +40,21 @@ namespace com.github.akovac35.Logging.Correlation
             Value = correlation ?? throw new ArgumentNullException(nameof(correlation));
         }
 
+        public CorrelationProvider(string headerName)
+        {
+            HeaderName = headerName ?? throw new ArgumentNullException(nameof(headerName));
+            Value = new Correlation();
+        }
+
+        public CorrelationProvider(Correlation correlation, string headerName)
+        {
+            HeaderName = headerName ?? throw new ArgumentNullException(nameof(headerName));
+            Value = correlation ?? throw new ArgumentNullException(nameof(correlation));
+        }
+
         public Correlation Value { get; protected set; }
+
+        public string HeaderName { get; protected set; } = "x-request-id";
 
         public string GetCorrelationId()
         {

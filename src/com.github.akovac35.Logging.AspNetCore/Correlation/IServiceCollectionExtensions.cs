@@ -3,6 +3,7 @@
 
 // Authors:
 //   Aleksander Kovač
+//   Denis Kavčič
 
 using com.github.akovac35.Logging.Correlation;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,11 @@ namespace com.github.akovac35.Logging.AspNetCore.Correlation
     {
         public static IServiceCollection AddLoggingCorrelation(this IServiceCollection services, string correlationIdHeaderName = "x-request-id", bool obtainCorrelationIdFromRequestHeaders = false)
         {
-            services.TryAddScoped<ICorrelationProvider, CorrelationProvider>();
+            services.TryAddScoped<ICorrelationProvider>(ILoggerFactory => {
+                var provider = new CorrelationProvider(correlationIdHeaderName);
+                return provider;
+            });
+            services.TryAddScoped<CorrelationProviderAccessor>();
             services.TryAddScoped<LoggingCorrelationMiddleware>(fact => {
                 return new LoggingCorrelationMiddleware(fact.GetRequiredService<ICorrelationProvider>(), fact.GetRequiredService<ILogger<LoggingCorrelationMiddleware>>(), correlationIdHeaderName, obtainCorrelationIdFromRequestHeaders);
             });
