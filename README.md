@@ -44,6 +44,7 @@ Advanced samples utilizing library functionality are provided here: [Logging.Sam
     - [Unit test logging](#unit-test-logging)
     - [3rd party logger frameworks helper methods](#3rd-party-logger-frameworks-helper-methods)
     - [Message template examples](#message-template-examples)
+  - [Release history](#release-history)
   - [Contributing](#contributing)
 	- [Contributors](#contributors)
   - [License](#license)
@@ -470,6 +471,7 @@ ATN! - will not render as perhaps expected, only the first array element will be
 * 1.0.5 - Production ready, using ```HttpContext``` for log correlation.
 * 1.1.0 - Not using ```HttpContext``` for log correlation anymore - use ```CorrelationProvider.CurrentCorrelationProvider?.GetCorrelationId()``` to obtain the correlation value for the current ambient context. Made it easier to wire up logging services by introducing the ```AddLoggingCorrelation```, ```UseLoggingCorrelation``` and ```AddTestLogger``` extension methods. The ```CorrelationIdMiddleware``` was renamed to ```LoggingCorrelationMiddleware```. Updated dependencies. Removed ASP.NET Core projects containing NLog and Serilog helper code because it is no longer needed. Switched to using abstractions as much as possible.
 * 1.1.1 - Added CorrelationProviderAccessor.
+* 1.1.2 - Made the Current property of CorrelationProviderAccessor virtual.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

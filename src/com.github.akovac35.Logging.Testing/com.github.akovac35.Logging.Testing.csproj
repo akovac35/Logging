@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>Helpful resources for .NET Core and ASP.NET Core logging using various logger frameworks and Microsoft.Extensions.Logging.ILogger interface.</Description>
-    <VersionPrefix>1.1.1</VersionPrefix>
+    <VersionPrefix>1.1.2</VersionPrefix>
     <Authors>Aleksander Kovač</Authors>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <PackageTags>logging;serilog;nlog;correlation</PackageTags>
