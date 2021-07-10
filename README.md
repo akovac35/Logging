@@ -123,7 +123,7 @@ using static com.github.akovac35.Logging.LoggerHelper<WebApp.Pages.Counter>
 Here(l => l.LogInformation("currentCount: {0}", currentCount));
 ```
 
-It is important to note that instead of using reflection, invocation context is determined with the help of compiler service attributes, which minimizes performance impact. Benchmarking revealed that invocation overhead of ```_logger.Here(Action<ILogger> logAction)``` versus direct logger method invocation is about 30%, which is negligible.
+It is important to note that instead of using reflection, invocation context is determined with the help of compiler service attributes, which minimizes performance impact. Benchmarking revealed that invocation overhead of ```_logger.Here(Action<ILogger> logAction)``` versus direct logger method invocation is less than 20%, which is negligible.
 
 When this functionality is not disabled, invocation context is passed to logger frameworks via ```ILogger.BeginScope()```, as follows:
 
@@ -472,6 +472,7 @@ ATN! - will not render as perhaps expected, only the first array element will be
 * 1.1.0 - Not using ```HttpContext``` for log correlation anymore - use ```CorrelationProvider.CurrentCorrelationProvider?.GetCorrelationId()``` to obtain the correlation value for the current ambient context. Made it easier to wire up logging services by introducing the ```AddLoggingCorrelation```, ```UseLoggingCorrelation``` and ```AddTestLogger``` extension methods. The ```CorrelationIdMiddleware``` was renamed to ```LoggingCorrelationMiddleware```. Updated dependencies. Removed ASP.NET Core projects containing NLog and Serilog helper code because it is no longer needed. Switched to using abstractions as much as possible.
 * 1.1.1 - Added CorrelationProviderAccessor.
 * 1.1.2 - Made the Current property of CorrelationProviderAccessor virtual.
+* 1.2.0 - Bumped references and framework version. Updated nulabillity for ILogger extensions.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <Description>Helpful resources for .NET Core and ASP.NET Core logging using various logger frameworks and Microsoft.Extensions.Logging.ILogger interface.</Description>
-    <VersionPrefix>1.1.2</VersionPrefix>
+    <Version>1.2.0</Version>
     <Authors>Aleksander Kovač</Authors>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net5.0</TargetFrameworks>
     <PackageTags>logging;serilog;nlog;correlation</PackageTags>
     <RepositoryUrl>https://github.com/akovac35/Logging</RepositoryUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -12,7 +12,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageIcon>.NET_Core_Logo.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Updated Logging version.</PackageReleaseNotes>
+    <PackageReleaseNotes>Bumped references and framework version.</PackageReleaseNotes>
 
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

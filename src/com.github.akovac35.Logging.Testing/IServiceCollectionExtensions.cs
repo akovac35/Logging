@@ -4,6 +4,7 @@
 // Authors:
 //   Aleksander Kovač
 
+using com.github.akovac35.Logging.Correlation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -36,6 +37,7 @@ namespace com.github.akovac35.Logging.Testing
                 return fact.GetRequiredService<TestLoggerFactory>();
             });
             services.TryAddSingleton(typeof(ILogger<>), typeof(TestLogger<>));
+            services.TryAddScoped<CorrelationProviderAccessor, TestCorrelationProviderAccessor>();
 
             return services;
         }
